@@ -2,93 +2,56 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>🧟 Zumbi House — Barricadas Realistas</title>
+<title>🧟 Zumbi House V6.2</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    background: #0a0a0c;
-    color: #eee;
+    background: #0a0a0c; color: #eee;
     font-family: 'Courier New', monospace;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+    padding: 10px; display: flex; flex-direction: column;
+    align-items: center; min-height: 100vh;
 }
 #hud {
-    display: flex;
-    gap: 18px;
-    background: #1a1a1e;
-    padding: 10px 20px;
-    border: 2px solid #3a3a44;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    font-size: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: flex; gap: 18px; background: #1a1a1e;
+    padding: 10px 20px; border: 2px solid #3a3a44;
+    border-radius: 8px; margin-bottom: 10px; font-size: 15px;
+    flex-wrap: wrap; justify-content: center;
 }
 #hud span { color: #4af; font-weight: bold; }
 canvas {
-    background: #1a1a1e;
-    border: 3px solid #3a3a44;
-    border-radius: 8px;
-    display: block;
-    cursor: crosshair;
+    background: #1a1a1e; border: 3px solid #3a3a44;
+    border-radius: 8px; display: block; cursor: crosshair;
 }
 #inventario {
-    margin-top: 10px;
-    background: #1a1a1e;
-    padding: 10px 20px;
-    border: 2px solid #3a3a44;
-    border-radius: 8px;
-    width: 960px;
-    font-size: 13px;
+    margin-top: 10px; background: #1a1a1e;
+    padding: 10px 20px; border: 2px solid #3a3a44;
+    border-radius: 8px; width: 960px; font-size: 13px;
 }
 #itens { display: flex; gap: 10px; margin-top: 6px; }
 .item-slot {
-    flex: 1;
-    background: #2a2a33;
-    border: 2px solid #444;
-    border-radius: 6px;
-    padding: 8px;
-    text-align: center;
-    font-size: 12px;
+    flex: 1; background: #2a2a33; border: 2px solid #444;
+    border-radius: 6px; padding: 8px; text-align: center; font-size: 12px;
 }
 .item-slot.vazio { opacity: 0.3; }
 .item-slot.selecionado { border-color: #4CAF50; background: #2a4a2a; }
 #aviso {
-    margin-top: 8px;
-    color: #ffcc00;
-    font-size: 12px;
-    text-align: center;
-    max-width: 960px;
-    line-height: 1.5;
+    margin-top: 8px; color: #ffcc00; font-size: 12px;
+    text-align: center; max-width: 960px; line-height: 1.5;
 }
 #gameOver {
-    position: fixed;
-    top: 50%; left: 50%;
+    position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.97);
-    padding: 40px 60px;
-    border: 4px solid #c00;
-    border-radius: 12px;
-    text-align: center;
-    z-index: 1000;
-    box-shadow: 0 0 80px #c00;
+    background: rgba(0,0,0,0.97); padding: 40px 60px;
+    border: 4px solid #c00; border-radius: 12px;
+    text-align: center; z-index: 1000; box-shadow: 0 0 80px #c00;
 }
 #gameOver h1 { color: #c00; font-size: 48px; margin-bottom: 20px; }
 #gameOver p { font-size: 18px; margin-bottom: 10px; }
 #gameOver button {
-    margin-top: 20px;
-    padding: 12px 30px;
-    background: #c00;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 18px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: bold;
+    margin-top: 20px; padding: 12px 30px;
+    background: #c00; color: white; border: none;
+    border-radius: 6px; font-size: 18px; cursor: pointer;
+    font-family: inherit; font-weight: bold;
 }
 .escondido { display: none !important; }
 </style>
@@ -101,20 +64,19 @@ canvas {
     <div>🕐 <span id="tempo">0</span>s</div>
     <div>🧟 <span id="zumbis">0</span></div>
     <div>🪵 <span id="barricadas">0</span></div>
-    <div style="color:#9f9;">🖱️ <span id="modo">LIVRE</span></div>
+    <div>🖱️ <span id="modo">LIVRE</span></div>
 </div>
 
 <canvas id="canvas" width="960" height="640"></canvas>
 
 <div id="inventario">
-    <strong>🎒 Inventário (1-5 pra equipar móvel)</strong>
+    <strong>🎒 Inventário (1-5 pra pegar móvel)</strong>
     <div id="itens"></div>
 </div>
 
 <div id="aviso">
-    <b>SEGURAR ITEM:</b> aproxime do item e <b>SEGURE o botão DIREITO</b> do mouse → ele gruda na sua mão → ande → <b>solte</b> pra jogar no chão<br>
-    <b>OU</b> aperte <b>1-5</b> com o móvel no inventário → aperte <b>E</b> pra colocar na frente (mira)<br>
-    WASD = andar | Shift = correr | Botão esq = atirar | Q = devolver
+    <b>PEGAR MÓVEL:</b> Segure o <b>BOTÃO DIREITO</b> em cima de um item grande → ele gruda na sua mão → ande até a porta → solte → barricada!<br>
+    WASD = andar | Shift = correr | Botão esq = atirar | Q = devolver | E = soltar na mira
 </div>
 
 <div id="gameOver" class="escondido">
@@ -126,14 +88,10 @@ canvas {
 
 <script>
 "use strict";
-window.onerror = function(m, u, l) {
-    const el = document.getElementById('erro');
-    if (el) { el.style.display = 'block'; el.textContent = 'ERR ' + l + ': ' + m; }
-};
 
 try {
 
-// polyfill
+// Polyfill roundRect
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
         if (typeof r === 'number') r = [r, r, r, r];
@@ -163,7 +121,7 @@ function initAudio() {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-    } catch(e) {}
+    } catch(e){}
 }
 function toca(f1, f2, d, t, v) {
     if (!audioCtx) return;
@@ -178,14 +136,14 @@ function toca(f1, f2, d, t, v) {
         o.start(); o.stop(audioCtx.currentTime + d + 0.05);
     } catch(e){}
 }
-const sTiro   = () => toca(220, 60, 0.18, 'square', 0.2);
-const sDano   = () => toca(140, 70, 0.3, 'sawtooth', 0.25);
-const sCura   = () => toca(440, 880, 0.35, 'sine', 0.18);
+const sTiro = () => toca(220, 60, 0.18, 'square', 0.2);
+const sDano = () => toca(140, 70, 0.3, 'sawtooth', 0.25);
+const sCura = () => toca(440, 880, 0.35, 'sine', 0.18);
 const sColeta = () => toca(600, 900, 0.12, 'triangle', 0.15);
-const sMorte  = () => toca(180, 40, 0.45, 'sawtooth', 0.2);
+const sMorte = () => toca(180, 40, 0.45, 'sawtooth', 0.2);
 const sQuebra = () => toca(60, 30, 0.7, 'square', 0.28);
-const sBate   = () => toca(90 + Math.random()*40, 50, 0.1, 'square', 0.2);
-const sPegar  = () => toca(500, 700, 0.15, 'sine', 0.18);
+const sBate = () => toca(90 + Math.random()*40, 50, 0.1, 'square', 0.2);
+const sPegar = () => toca(500, 700, 0.15, 'sine', 0.18);
 const sSoltar = () => toca(300, 150, 0.2, 'triangle', 0.2);
 function sGemido() {
     if (!audioCtx) return;
@@ -250,11 +208,10 @@ let barricadas = [];
 let manchasSangue = [];
 let inventario = [];
 let itemSelecionado = 0;
-let itemNaMao = null;         // item que está sendo carregado com botão direito
-let itemNaMaoOriginal = null; // posição original caso solte em local inválido
+let itemNaMao = null;
+let itemNaMaoOriginal = null;
 let tempo = 0, rodando = true, spawnTimer = 0, ultimoFrame = 0, gemidoTimer = 0;
 let mouse = { x: LARGURA/2, y: ALTURA/2 };
-let mousePressionado = false;
 let botaoDireitoPressionado = false;
 let camera = { x: 0, y: 0 };
 let zumbisMortosContador = 0;
@@ -263,13 +220,13 @@ const TIPOS_ITEM = {
     'arma':       { nome: 'Pistola',   tipo: 'arma' },
     'municao':    { nome: 'Munição',   tipo: 'municao' },
     'medkit':     { nome: 'Medkit',    tipo: 'medkit' },
-    'caixa':      { nome: 'Caixa',     tipo: 'movel', largura: 36, altura: 36, vida: 80 },
-    'caixagrande':{ nome: 'Caixa G.',  tipo: 'movel', largura: 52, altura: 46, vida: 150 },
-    'geladeira':  { nome: 'Geladeira', tipo: 'movel', largura: 42, altura: 56, vida: 200 },
-    'sofa':       { nome: 'Sofá',      tipo: 'movel', largura: 60, altura: 32, vida: 120 },
-    'estante':    { nome: 'Estante',   tipo: 'movel', largura: 44, altura: 40, vida: 110 },
-    'barril':     { nome: 'Barril',    tipo: 'movel', largura: 38, altura: 44, vida: 130 },
-    'mesa':       { nome: 'Mesa',      tipo: 'movel', largura: 52, altura: 36, vida: 100 },
+    'caixa':      { nome: 'Caixa',     tipo: 'movel', largura: 40, altura: 40, vida: 100 },
+    'caixagrande':{ nome: 'Caixa G.',  tipo: 'movel', largura: 56, altura: 50, vida: 180 },
+    'geladeira':  { nome: 'Geladeira', tipo: 'movel', largura: 44, altura: 60, vida: 240 },
+    'sofa':       { nome: 'Sofá',      tipo: 'movel', largura: 64, altura: 36, vida: 150 },
+    'estante':    { nome: 'Estante',   tipo: 'movel', largura: 48, altura: 44, vida: 130 },
+    'barril':     { nome: 'Barril',    tipo: 'movel', largura: 40, altura: 48, vida: 160 },
+    'mesa':       { nome: 'Mesa',      tipo: 'movel', largura: 56, altura: 40, vida: 120 },
 };
 
 function criarJogador() {
@@ -279,31 +236,34 @@ function criarZumbiRapido(x, y) {
     return { x, y, raio: 10, vel: 130 + Math.random()*30, vida: 20, dano: 6, ultimoDano: 0,
              tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a', passo: 0,
              ultimoVisto: null, tempoPerdido: 0, memoria: 3, vagarPonto: null,
-             empurrando: null };
+             empurrando: null, travado: 0 };
 }
 function criarZumbiForte(x, y) {
     return { x, y, raio: 18, vel: 50 + Math.random()*15, vida: 70, dano: 15, ultimoDano: 0,
              tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a', passo: 0,
              ultimoVisto: null, tempoPerdido: 0, memoria: 5, vagarPonto: null,
-             empurrando: null };
+             empurrando: null, travado: 0 };
 }
 function criarItem(x, y, tipo) {
     const info = TIPOS_ITEM[tipo];
     return {
         x, y, tipo, raio: 14, bob: Math.random() * Math.PI * 2,
-        rot: (Math.random() - 0.5) * 0.15,
         largura: info.largura || 22,
         altura: info.altura || 22
     };
 }
 
-// ===== COLISÃO =====
-// Uma barricada é um retângulo centrado em (x,y) com (largura x altura).
-// Zumbi é um círculo.
-// Colisão círculo x retângulo.
+// ===================================================================
+//  SISTEMA DE COLISÃO — CÍRCULO x RETÂNGULO (sólido, sem atravessar)
+// ===================================================================
 
-function colideCirculoRet(cx, cy, cr, rx, ry, rw, rh) {
-    const halfW = rw / 2, halfH = rh / 2;
+// Retorna true se o círculo (cx,cy,cr) sobrepõe o retângulo centrado em (rx,ry) com (rw,rh).
+// Adiciona uma margem pra evitar que o zumbi "raspe" e passe.
+const MARGEM_COLISAO = 4; // 4px de margem extra em volta do retângulo
+
+function circuloSobrepoeRet(cx, cy, cr, rx, ry, rw, rh) {
+    const halfW = rw / 2 + MARGEM_COLISAO;
+    const halfH = rh / 2 + MARGEM_COLISAO;
     const closestX = Math.max(rx - halfW, Math.min(cx, rx + halfW));
     const closestY = Math.max(ry - halfH, Math.min(cy, ry + halfH));
     const dx = cx - closestX;
@@ -311,7 +271,17 @@ function colideCirculoRet(cx, cy, cr, rx, ry, rw, rh) {
     return dx*dx + dy*dy < cr*cr;
 }
 
-function colideParede(x, y, raio) {
+// Colisão só com barricadas (usada por zumbis)
+function colideBarricadas(x, y, raio, ignorar) {
+    for (let i = 0; i < barricadas.length; i++) {
+        const b = barricadas[i];
+        if (b === ignorar) continue;
+        if (circuloSobrepoeRet(x, y, raio, b.x, b.y, b.largura, b.altura)) return b;
+    }
+    return null;
+}
+
+function colideParedes(x, y, raio) {
     const x1 = Math.floor((x - raio) / TAMANHO_TILE);
     const y1 = Math.floor((y - raio) / TAMANHO_TILE);
     const x2 = Math.floor((x + raio) / TAMANHO_TILE);
@@ -324,14 +294,70 @@ function colideParede(x, y, raio) {
     return false;
 }
 
-function colideTudo(x, y, raio, ignorarBar) {
-    if (colideParede(x, y, raio)) return true;
-    for (let i = 0; i < barricadas.length; i++) {
-        const b = barricadas[i];
-        if (b === ignorarBar) continue;
-        if (colideCirculoRet(x, y, raio, b.x, b.y, b.largura, b.altura)) return true;
+// Movimento com DESLIZE — se não pode ir em X,Y, tenta só em X ou só em Y.
+// Retorna a nova posição.
+function moverComColisao(ent, dx, dy, raio, ignorarBar) {
+    let nx = ent.x + dx;
+    let ny = ent.y + dy;
+
+    // Bloqueio por parede
+    const bloqueiaParede = (x, y) => colideParedes(x, y, raio);
+
+    // Testa posição final primeiro
+    const podeX = !bloqueiaParede(nx, ent.y) && !colideBarricadas(nx, ent.y, raio, ignorarBar);
+    const podeY = !bloqueiaParede(ent.x, ny) && !colideBarricadas(ent.x, ny, raio, ignorarBar);
+
+    // Se X e Y juntos passam, ótimo
+    if (!bloqueiaParede(nx, ny) && !colideBarricadas(nx, ny, raio, ignorarBar)) {
+        ent.x = nx;
+        ent.y = ny;
+        return true;
     }
-    return false;
+
+    // Senão, tenta deslizar
+    let moveu = false;
+    if (podeX) { ent.x = nx; moveu = true; }
+    if (podeY) { ent.y = ny; moveu = true; }
+
+    // Se ainda travado, tenta empurrar pra fora de uma barricada (última chance)
+    if (!moveu) {
+        const b = colideBarricadas(ent.x, ent.y, raio, ignorarBar);
+        if (b) {
+            // Vetor saindo do centro da barricada
+            let vx = ent.x - b.x;
+            let vy = ent.y - b.y;
+            const len = Math.sqrt(vx*vx + vy*vy) || 1;
+            vx /= len; vy /= len;
+            // Empurra pra fora
+            const empurrao = 2;
+            const ex = ent.x + vx * empurrao;
+            const ey = ent.y + vy * empurrao;
+            if (!colideBarricadas(ex, ey, raio, ignorarBar)) {
+                ent.x = ex;
+                ent.y = ey;
+            }
+        }
+    }
+    return moveu;
+}
+
+// Raycast: retorna a barricada mais próxima entre (x1,y1) e (x2,y2), se houver.
+function barricadaNoCaminho(x1, y1, x2, y2) {
+    const passos = 20;
+    let primeiraEncontrada = null;
+    let distPrimeira = Infinity;
+
+    for (let i = 1; i <= passos; i++) {
+        const t = i / passos;
+        const px = x1 + (x2 - x1) * t;
+        const py = y1 + (y2 - y1) * t;
+        const b = colideBarricadas(px, py, 2, null);
+        if (b) {
+            const d = Math.sqrt((px - x1)**2 + (py - y1)**2);
+            if (d < distPrimeira) { distPrimeira = d; primeiraEncontrada = b; }
+        }
+    }
+    return primeiraEncontrada;
 }
 
 function temVisao(x1, y1, x2, y2) {
@@ -355,14 +381,13 @@ function onKeyDown(e) {
     initAudio();
     const k = e.key.toLowerCase();
     teclas[k] = true;
-
     if (e.key >= '1' && e.key <= '5') usarItem(parseInt(e.key) - 1);
     if (e.key === ' ') { e.preventDefault(); atirar(); }
-    if (k === 'e' && !itemNaMao) tentarColocarBarricada();
+    if (k === 'e' && itemNaMao) soltarItemNaMao();
     if (k === 'q' && itemNaMao) {
-        // Devolve pra posição original
         itemNaMao.x = itemNaMaoOriginal.x;
         itemNaMao.y = itemNaMaoOriginal.y;
+        itens.push(itemNaMao);
         itemNaMao = null;
         itemNaMaoOriginal = null;
         atualizarModo();
@@ -374,18 +399,15 @@ window.addEventListener('keydown', onKeyDown);
 window.addEventListener('keyup', onKeyUp);
 
 canvas.addEventListener('mousemove', function(e) {
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = (e.clientX - rect.left) * (LARGURA / rect.width);
-    mouse.y = (e.clientY - rect.top) * (ALTURA / rect.height);
+    const r = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - r.left) * (LARGURA / r.width);
+    mouse.y = (e.clientY - r.top) * (ALTURA / r.height);
 });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 
 canvas.addEventListener('mousedown', function(e) {
     initAudio();
-    if (e.button === 0) {
-        mousePressionado = true;
-        atirar();
-    }
+    if (e.button === 0) atirar();
     if (e.button === 2) {
         botaoDireitoPressionado = true;
         tentarPegarItemSobMouse();
@@ -393,36 +415,26 @@ canvas.addEventListener('mousedown', function(e) {
 });
 
 window.addEventListener('mouseup', function(e) {
-    if (e.button === 0) mousePressionado = false;
     if (e.button === 2) {
         botaoDireitoPressionado = false;
         if (itemNaMao) soltarItemNaMao();
     }
 });
 
-// ===== PEGAR ITEM SOB MOUSE (segurar) =====
 function tentarPegarItemSobMouse() {
     if (itemNaMao) return;
-
     const mmX = mouse.x + camera.x;
     const mmY = mouse.y + camera.y;
 
-    // Verifica se clicou em cima de um item móvel
     for (let i = itens.length - 1; i >= 0; i--) {
         const it = itens[i];
         const info = TIPOS_ITEM[it.tipo];
         if (info.tipo !== 'movel') continue;
-
-        // Distância do clique até o retângulo do item
-        const dx = mmX - it.x, dy = mmY - it.y;
-        const dentroX = Math.abs(dx) < it.largura/2 + 6;
-        const dentroY = Math.abs(dy) < it.altura/2 + 6;
-
+        const dentroX = Math.abs(mmX - it.x) < it.largura/2 + 8;
+        const dentroY = Math.abs(mmY - it.y) < it.altura/2 + 8;
         if (dentroX && dentroY) {
-            // Só pode pegar se o jogador estiver perto
             const dist = Math.sqrt((it.x - jogador.x)**2 + (it.y - jogador.y)**2);
             if (dist > jogador.raio + 90) return;
-
             itemNaMao = it;
             itemNaMaoOriginal = { x: it.x, y: it.y };
             itens.splice(i, 1);
@@ -435,48 +447,46 @@ function tentarPegarItemSobMouse() {
 
 function soltarItemNaMao() {
     if (!itemNaMao) return;
-
-    // Posição alvo: onde o mouse está, mas limitado perto do jogador (60px de alcance)
     const mmX = mouse.x + camera.x;
     const mmY = mouse.y + camera.y;
+    const ddx = mmX - jogador.x, ddy = mmY - jogador.y;
+    const d = Math.sqrt(ddx*ddx + ddy*ddy);
+    const alcance = 90;
 
-    const dx = mmX - jogador.x, dy = mmY - jogador.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const maxAlcance = 90;
+    let px, py;
+    if (d > alcance) {
+        const f = alcance / d;
+        px = jogador.x + ddx * f;
+        py = jogador.y + ddy * f;
+    } else { px = mmX; py = mmY; }
 
-    let dropX, dropY;
-    if (dist > maxAlcance) {
-        const f = maxAlcance / dist;
-        dropX = jogador.x + dx * f;
-        dropY = jogador.y + dy * f;
-    } else {
-        dropX = mmX;
-        dropY = mmY;
+    const info = TIPOS_ITEM[itemNaMao.tipo];
+    // Verifica se cabe (não sobrepõe parede nem outra barricada)
+    const bloqueiaParede = colideParedes(px, py, Math.max(info.largura, info.altura) / 2 - 2);
+    let sobrepoe = false;
+    for (let i = 0; i < barricadas.length; i++) {
+        const b = barricadas[i];
+        const teste = circuloSobrepoeRet(px, py, Math.max(info.largura, info.altura)/2, b.x, b.y, b.largura, b.altura);
+        if (teste) { sobrepoe = true; break; }
     }
 
-    // Testa se cabe no local
-    const info = TIPOS_ITEM[itemNaMao.tipo];
-    const cabe = !colideTudo(dropX, dropY, Math.max(info.largura, info.altura) / 2 - 2, null);
-
-    if (cabe) {
-        itemNaMao.x = dropX;
-        itemNaMao.y = dropY;
+    if (!bloqueiaParede && !sobrepoe) {
+        itemNaMao.x = px;
+        itemNaMao.y = py;
         itens.push(itemNaMao);
         sSoltar();
     } else {
-        // Volta pra posição original
         itemNaMao.x = itemNaMaoOriginal.x;
         itemNaMao.y = itemNaMaoOriginal.y;
         itens.push(itemNaMao);
         sSoltar();
     }
-
     itemNaMao = null;
     itemNaMaoOriginal = null;
     atualizarModo();
 }
 
-// ===== INVENTÁRIO (método alternativo) =====
+// ===== INVENTÁRIO =====
 function adicionarItem(tipo) {
     if (inventario.length >= 5) inventario[itemSelecionado] = tipo;
     else inventario.push(tipo);
@@ -490,7 +500,6 @@ function usarItem(idx) {
     if (!tipo) return;
     const info = TIPOS_ITEM[tipo];
     if (!info) return;
-
     itemSelecionado = idx;
 
     if (tipo === 'medkit') {
@@ -505,19 +514,14 @@ function usarItem(idx) {
         itemSelecionado = 0;
         sColeta();
     } else if (info.tipo === 'movel') {
-        // Transforma em item na mão
         if (itemNaMao) return;
-        // Cria item na frente do jogador
         const nx = jogador.x + Math.cos(jogador.direcao) * 60;
         const ny = jogador.y + Math.sin(jogador.direcao) * 60;
         const it = criarItem(nx, ny, tipo);
-        itens.push(it);
-        inventario.splice(idx, 1);
-        itemSelecionado = 0;
-        // Pega automaticamente
         itemNaMao = it;
         itemNaMaoOriginal = { x: nx, y: ny };
-        itens.splice(itens.indexOf(it), 1);
+        inventario.splice(idx, 1);
+        itemSelecionado = 0;
         sPegar();
         atualizarModo();
     }
@@ -529,17 +533,13 @@ function atualizarInventario() {
     const div = document.getElementById('itens');
     div.innerHTML = '';
     for (let i = 0; i < 5; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'item-slot';
-        if (i === itemSelecionado) slot.classList.add('selecionado');
+        const s = document.createElement('div');
+        s.className = 'item-slot';
+        if (i === itemSelecionado) s.classList.add('selecionado');
         const tipo = inventario[i];
-        if (tipo && TIPOS_ITEM[tipo]) {
-            slot.textContent = (i+1) + '. ' + TIPOS_ITEM[tipo].nome;
-        } else {
-            slot.classList.add('vazio');
-            slot.textContent = (i+1) + '. vazio';
-        }
-        div.appendChild(slot);
+        if (tipo && TIPOS_ITEM[tipo]) s.textContent = (i+1) + '. ' + TIPOS_ITEM[tipo].nome;
+        else { s.classList.add('vazio'); s.textContent = (i+1) + '. vazio'; }
+        div.appendChild(s);
     }
 }
 
@@ -557,19 +557,13 @@ function atualizarHUD() {
     document.getElementById('barricadas').textContent = barricadas.length;
 }
 
-// ===== ATIRAR =====
 function atirar() {
     initAudio();
-    if (!rodando) return;
-    if (jogador.municao <= 0) return;
+    if (!rodando || jogador.municao <= 0) return;
     if (inventario.indexOf('arma') < 0) return;
-
     jogador.municao--;
     sTiro();
-
-    const dirX = Math.cos(jogador.direcao);
-    const dirY = Math.sin(jogador.direcao);
-
+    const dirX = Math.cos(jogador.direcao), dirY = Math.sin(jogador.direcao);
     let alvo = null, menorDist = 500;
     for (let i = 0; i < zumbis.length; i++) {
         const z = zumbis[i];
@@ -579,12 +573,8 @@ function atirar() {
         const dot = (dx * dirX + dy * dirY) / d;
         if (dot > 0.95) { menorDist = d; alvo = z; }
     }
-
-    particulas.push({
-        tipo: 'tiro', x1: jogador.x, y1: jogador.y,
-        x2: jogador.x + dirX * 500, y2: jogador.y + dirY * 500, vida: 0.08
-    });
-
+    particulas.push({ tipo: 'tiro', x1: jogador.x, y1: jogador.y,
+        x2: jogador.x + dirX * 500, y2: jogador.y + dirY * 500, vida: 0.08 });
     if (alvo) {
         alvo.vida -= 20;
         for (let i = 0; i < 8; i++)
@@ -599,25 +589,6 @@ function atirar() {
     atualizarHUD();
 }
 
-// ===== COLOCAR BARRICADA (tecla E) =====
-function tentarColocarBarricada() {
-    if (!itemNaMao) {
-        // Tenta converter um item móvel do inventário
-        for (let i = 0; i < inventario.length; i++) {
-            const info = TIPOS_ITEM[inventario[i]];
-            if (info && info.tipo === 'movel') {
-                usarItem(i);
-                return;
-            }
-        }
-        return;
-    }
-
-    // Se está segurando, o E força ele pra posição do mouse (igual soltar)
-    soltarItemNaMao();
-}
-
-// ===== SANGUE =====
 function adicionarSangue(x, y, escala) {
     if (manchasSangue.length >= 800) manchasSangue.shift();
     const num = 4 + Math.floor(Math.random() * 4);
@@ -661,10 +632,9 @@ function iniciar() {
         [1700, 500, 'sofa'], [1800, 300, 'municao'], [1900, 700, 'medkit'],
         [2000, 400, 'estante'], [2100, 200, 'caixagrande'], [700, 900, 'barril'],
     ];
-
     for (let i = 0; i < pos.length; i++) {
         const p = pos[i];
-        if (!colideParede(p[0], p[1], 15)) itens.push(criarItem(p[0], p[1], p[2]));
+        if (!colideParedes(p[0], p[1], 15)) itens.push(criarItem(p[0], p[1], p[2]));
     }
 
     atualizarHUD();
@@ -683,27 +653,23 @@ function atualizar(dt) {
     const mmY = mouse.y + camera.y;
     jogador.direcao = Math.atan2(mmY - jogador.y, mmX - jogador.x);
 
-    // Movimento
+    // Movimento do jogador
     let dx = 0, dy = 0;
     if (teclas['w'] || teclas['arrowup']) dy -= 1;
     if (teclas['s'] || teclas['arrowdown']) dy += 1;
     if (teclas['a'] || teclas['arrowleft']) dx -= 1;
     if (teclas['d'] || teclas['arrowright']) dx += 1;
-
     if (dx !== 0 || dy !== 0) {
         const len = Math.sqrt(dx*dx + dy*dy);
         dx /= len; dy /= len;
         const correr = teclas['shift'] ? 1.55 : 1;
-        // Reduz velocidade se carregando item
         const fatorCarga = itemNaMao ? 0.7 : 1;
-        const nx = jogador.x + dx * jogador.vel * correr * fatorCarga * dt;
-        const ny = jogador.y + dy * jogador.vel * correr * fatorCarga * dt;
-        if (!colideParede(nx, jogador.y, jogador.raio)) jogador.x = nx;
-        if (!colideParede(jogador.x, ny, jogador.raio)) jogador.y = ny;
+        const vel = jogador.vel * correr * fatorCarga * dt;
+        moverComColisao(jogador, dx * vel, dy * vel, jogador.raio, null);
         jogador.passo += dt * 10;
     }
 
-    // Se está carregando, o item segue o mouse (até 90px de distância do jogador)
+    // Item na mão segue o mouse
     if (itemNaMao) {
         const ddx = mmX - jogador.x, ddy = mmY - jogador.y;
         const d = Math.sqrt(ddx*ddx + ddy*ddy);
@@ -712,23 +678,17 @@ function atualizar(dt) {
             const f = alcance / d;
             itemNaMao.x = jogador.x + ddx * f;
             itemNaMao.y = jogador.y + ddy * f;
-        } else {
-            itemNaMao.x = mmX;
-            itemNaMao.y = mmY;
-        }
+        } else { itemNaMao.x = mmX; itemNaMao.y = mmY; }
     }
 
-    // Coleta automática
+    // Coleta
     for (let i = itens.length - 1; i >= 0; i--) {
         const it = itens[i];
         it.bob += dt * 3;
         const info = TIPOS_ITEM[it.tipo];
-        if (info.tipo === 'movel') continue; // móveis só são pegos segurando botão direito
+        if (info.tipo === 'movel') continue;
         const d = Math.sqrt((it.x-jogador.x)**2 + (it.y-jogador.y)**2);
-        if (d < jogador.raio + 20) {
-            adicionarItem(it.tipo);
-            itens.splice(i, 1);
-        }
+        if (d < jogador.raio + 20) { adicionarItem(it.tipo); itens.splice(i, 1); }
     }
 
     // Spawn
@@ -740,11 +700,11 @@ function atualizar(dt) {
         else if (lado === 1) { sx = LARGURA_MUNDO - 60; sy = Math.random() * ALTURA_MUNDO; }
         else if (lado === 2) { sx = Math.random() * LARGURA_MUNDO; sy = ALTURA_MUNDO - 60; }
         else { sx = Math.random() * LARGURA_MUNDO; sy = 60; }
-        if (!colideParede(sx, sy, 15))
+        if (!colideParedes(sx, sy, 15))
             zumbis.push(Math.random() < 0.6 ? criarZumbiRapido(sx, sy) : criarZumbiForte(sx, sy));
     }
 
-    // ===== IA + EMPURRAR BARRICADA =====
+    // ===== IA + EMPURRAR =====
     for (let zi = 0; zi < zumbis.length; zi++) {
         const z = zumbis[zi];
         const dxp = jogador.x - z.x, dyp = jogador.y - z.y;
@@ -752,7 +712,6 @@ function atualizar(dt) {
 
         const alcance = z.tipo === 'rapido' ? 320 : 240;
         const veJogador = dist < alcance && temVisao(z.x, z.y, jogador.x, jogador.y);
-
         if (veJogador) {
             z.ultimoVisto = { x: jogador.x, y: jogador.y };
             z.tempoPerdido = 0;
@@ -768,17 +727,14 @@ function atualizar(dt) {
             alvoX = z.ultimoVisto ? z.ultimoVisto.x : jogador.x;
             alvoY = z.ultimoVisto ? z.ultimoVisto.y : jogador.y;
 
-            // Procura barricada que está ENTRE ele e o jogador
-            let menorDist = 200;
-            for (let bi = 0; bi < barricadas.length; bi++) {
-                const b = barricadas[bi];
-                if (b.vida <= 0) continue;
-                const d = Math.sqrt((b.x-z.x)**2 + (b.y-z.y)**2);
-                if (d > menorDist) continue;
-                const dot = ((b.x-z.x)*dxp + (b.y-z.y)*dyp) / (d * dist || 1);
-                if (dot > 0.4) { menorDist = d; barricadaAlvo = b; }
+            // Verifica se tem barricada no caminho até o alvo
+            // Se tiver, foca nela (não contorna)
+            const bCaminho = barricadaNoCaminho(z.x, z.y, alvoX, alvoY);
+            if (bCaminho) {
+                barricadaAlvo = bCaminho;
+                alvoX = bCaminho.x;
+                alvoY = bCaminho.y;
             }
-            if (barricadaAlvo) { alvoX = barricadaAlvo.x; alvoY = barricadaAlvo.y; }
         } else {
             if (!z.vagarPonto || Math.sqrt((z.vagarPonto.x-z.x)**2 + (z.vagarPonto.y-z.y)**2) < 20) {
                 z.vagarPonto = {
@@ -792,33 +748,41 @@ function atualizar(dt) {
 
         const aDx = alvoX - z.x, aDy = alvoY - z.y;
         const aDist = Math.sqrt(aDx*aDx + aDy*aDy);
-        if (aDist > 5) {
-            const nx = z.x + (aDx/aDist) * z.vel * dt;
-            const ny = z.y + (aDy/aDist) * z.vel * dt;
-            if (!colideTudo(nx, z.y, z.raio, null)) { z.x = nx; z.passo += dt * 8; }
-            if (!colideTudo(z.x, ny, z.raio, null)) { z.y = ny; z.passo += dt * 8; }
+        if (aDist > 2) {
+            // Se tem barricada alvo, não empurrar o zumbi pra "atravessar" — ele desliza
+            const passo = z.vel * dt;
+            const dirX = aDx / aDist;
+            const dirY = aDy / aDist;
+            const moveu = moverComColisao(z, dirX * passo, dirY * passo, z.raio, null);
+
+            // Conta travamento: se ficou travado por muito tempo perto de barricada, é porque está encostando nela
+            if (!moveu && barricadaAlvo) {
+                z.travado += dt;
+            } else {
+                z.travado = 0;
+            }
+            z.passo += dt * 8;
         }
 
-        // Ataca barricada — EMPURRA
+        // Ataca barricada
         if (barricadaAlvo) {
-            const distBarX = Math.abs(z.x - barricadaAlvo.x) - barricadaAlvo.largura/2;
-            const distBarY = Math.abs(z.y - barricadaAlvo.y) - barricadaAlvo.altura/2;
-            const encostando = distBarX < z.raio + 4 && distBarY < z.raio + 4;
-
+            // Verifica se está encostando (com margem maior pra detectar)
+            const encostando = circuloSobrepoeRet(
+                z.x, z.y, z.raio + 6,
+                barricadaAlvo.x, barricadaAlvo.y,
+                barricadaAlvo.largura, barricadaAlvo.altura
+            );
             if (encostando) {
+                z.empurrando = barricadaAlvo;
                 if (tempo - (z.ultimoAtaqueBar || 0) > 0.6) {
                     z.ultimoAtaqueBar = tempo;
-                    // Dano individual
-                    const danoBase = z.tipo === 'forte' ? 10 : 4;
-                    barricadaAlvo.vida -= danoBase;
+                    barricadaAlvo.vida -= (z.tipo === 'forte' ? 10 : 4);
                     sBate();
                     if (barricadaAlvo.vida <= 0) {
                         sQuebra();
                         itens.push(criarItem(barricadaAlvo.x, barricadaAlvo.y, barricadaAlvo.tipo));
                     }
                 }
-                // Marca que esse zumbi está empurrando essa barricada
-                z.empurrando = barricadaAlvo;
             } else {
                 z.empurrando = null;
             }
@@ -836,20 +800,14 @@ function atualizar(dt) {
         }
     }
 
-    // ===== EFEITO DE EMPURRAR EM GRUPO =====
-    // Conta quantos zumbis estão empurrando cada barricada
+    // Empurrão em grupo
     for (let bi = 0; bi < barricadas.length; bi++) {
         const b = barricadas[bi];
-        if (b.vida <= 0) continue;
         let empurradores = 0;
-        for (let zi = 0; zi < zumbis.length; zi++) {
+        for (let zi = 0; zi < zumbis.length; zi++)
             if (zumbis[zi].empurrando === b) empurradores++;
-        }
-        // Se mais de 2 zumbis empurram a mesma barricada, acelera a quebra
-        if (empurradores > 2) {
-            b.vida -= (empurradores - 2) * dt * 12;
-        }
-        b.empurrando = empurradores; // só pra HUD
+        if (empurradores > 2) b.vida -= (empurradores - 2) * dt * 12;
+        b.empurrando = empurradores;
     }
 
     for (let i = barricadas.length - 1; i >= 0; i--)
@@ -869,8 +827,7 @@ function atualizar(dt) {
 function desenharTile(px, py, t) {
     switch (t) {
         case 0:
-            ctx.fillStyle = '#4a3828';
-            ctx.fillRect(px, py, 40, 40);
+            ctx.fillStyle = '#4a3828'; ctx.fillRect(px, py, 40, 40);
             ctx.strokeStyle = 'rgba(0,0,0,0.3)';
             ctx.beginPath(); ctx.moveTo(px + 20, py); ctx.lineTo(px + 20, py + 40); ctx.stroke();
             break;
@@ -891,7 +848,6 @@ function desenharTile(px, py, t) {
     }
 }
 
-// ===== SPRITES DETALHADOS DE ITENS/MÓVEIS =====
 function desenharMovelTipo(tipo, cx, cy, largura, altura, opts) {
     opts = opts || {};
     const alpha = opts.alpha || 1;
@@ -901,11 +857,9 @@ function desenharMovelTipo(tipo, cx, cy, largura, altura, opts) {
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.translate(cx, cy);
-
     const w = largura, h = altura;
     const halfW = w/2, halfH = h/2;
 
-    // Sombra realista embaixo
     if (!preview) {
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.beginPath();
@@ -913,7 +867,6 @@ function desenharMovelTipo(tipo, cx, cy, largura, altura, opts) {
         ctx.fill();
     }
 
-    // Se preview, contorno verde/vermelho
     if (preview) {
         ctx.fillStyle = ghost ? 'rgba(255,0,0,0.25)' : 'rgba(0,255,0,0.25)';
         ctx.fillRect(-halfW, -halfH, w, h);
@@ -926,196 +879,85 @@ function desenharMovelTipo(tipo, cx, cy, largura, altura, opts) {
         return;
     }
 
-    // Por tipo
     if (tipo === 'caixa') {
-        // Caixa de papelão
-        ctx.fillStyle = '#a87848';
-        ctx.fillRect(-halfW, -halfH, w, h);
-        // Tampa superior mais clara
-        ctx.fillStyle = '#c89860';
-        ctx.fillRect(-halfW, -halfH, w, h * 0.28);
-        // Fita adesiva central
-        ctx.fillStyle = '#e0c080';
-        ctx.fillRect(-3, -halfH, 6, h);
-        ctx.fillStyle = 'rgba(255,255,255,0.2)';
-        ctx.fillRect(-halfW + 4, -halfH + 4, w - 8, 3);
-        // Borda
-        ctx.strokeStyle = '#5a3a1a';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-        // Detalhe
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
-        ctx.fillRect(-halfW, halfH - 4, w, 4);
-
+        ctx.fillStyle = '#a87848'; ctx.fillRect(-halfW, -halfH, w, h);
+        ctx.fillStyle = '#c89860'; ctx.fillRect(-halfW, -halfH, w, h * 0.28);
+        ctx.fillStyle = '#e0c080'; ctx.fillRect(-3, -halfH, 6, h);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(-halfW + 4, -halfH + 4, w - 8, 3);
+        ctx.strokeStyle = '#5a3a1a'; ctx.lineWidth = 3; ctx.strokeRect(-halfW, -halfH, w, h);
+        ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(-halfW, halfH - 4, w, 4);
     } else if (tipo === 'caixagrande') {
-        // Caixa grande mais escura com listras
-        ctx.fillStyle = '#8a5a30';
-        ctx.fillRect(-halfW, -halfH, w, h);
-        ctx.fillStyle = '#b07a48';
-        ctx.fillRect(-halfW, -halfH, w, h * 0.3);
-        // Listras de madeira horizontais
-        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-        ctx.lineWidth = 2;
+        ctx.fillStyle = '#8a5a30'; ctx.fillRect(-halfW, -halfH, w, h);
+        ctx.fillStyle = '#b07a48'; ctx.fillRect(-halfW, -halfH, w, h * 0.3);
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 2;
         for (let i = 1; i < 4; i++) {
-            ctx.beginPath();
-            ctx.moveTo(-halfW, -halfH + i * h/4);
-            ctx.lineTo(halfW, -halfH + i * h/4);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-halfW, -halfH + i * h/4); ctx.lineTo(halfW, -halfH + i * h/4); ctx.stroke();
         }
-        // Cruz de fita
-        ctx.fillStyle = '#cfa060';
-        ctx.fillRect(-3, -halfH, 6, h);
-        ctx.fillRect(-halfW, -3, w, 6);
-        ctx.strokeStyle = '#3a1a00';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-        // Parafusos
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
-        ctx.arc(-halfW + 6, -halfH + 6, 2, 0, Math.PI*2);
-        ctx.arc(halfW - 6, -halfH + 6, 2, 0, Math.PI*2);
-        ctx.arc(-halfW + 6, halfH - 6, 2, 0, Math.PI*2);
-        ctx.arc(halfW - 6, halfH - 6, 2, 0, Math.PI*2);
-        ctx.fill();
-
+        ctx.fillStyle = '#cfa060'; ctx.fillRect(-3, -halfH, 6, h); ctx.fillRect(-halfW, -3, w, 6);
+        ctx.strokeStyle = '#3a1a00'; ctx.lineWidth = 3; ctx.strokeRect(-halfW, -halfH, w, h);
     } else if (tipo === 'geladeira') {
-        // Geladeira vertical
-        ctx.fillStyle = '#dfe8ee';
-        ctx.fillRect(-halfW, -halfH, w, h);
-        // Freezer em cima
-        ctx.fillStyle = '#c8d4dc';
-        ctx.fillRect(-halfW, -halfH, w, h * 0.3);
-        // Linha divisória
-        ctx.strokeStyle = '#8a959c';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-halfW, -halfH + h * 0.3);
-        ctx.lineTo(halfW, -halfH + h * 0.3);
-        ctx.stroke();
-        // Puxadores
+        ctx.fillStyle = '#dfe8ee'; ctx.fillRect(-halfW, -halfH, w, h);
+        ctx.fillStyle = '#c8d4dc'; ctx.fillRect(-halfW, -halfH, w, h * 0.3);
+        ctx.strokeStyle = '#8a959c'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(-halfW, -halfH + h * 0.3); ctx.lineTo(halfW, -halfH + h * 0.3); ctx.stroke();
         ctx.fillStyle = '#5a6570';
         ctx.fillRect(halfW - 8, -halfH + 8, 4, 12);
         ctx.fillRect(halfW - 8, -halfH + h * 0.3 + 8, 4, 18);
-        // Reflexo
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        ctx.fillRect(-halfW + 4, -halfH + 4, 4, h - 8);
-        // Borda
-        ctx.strokeStyle = '#4a5560';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-        // Ímã decorativo
+        ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fillRect(-halfW + 4, -halfH + 4, 4, h - 8);
+        ctx.strokeStyle = '#4a5560'; ctx.lineWidth = 3; ctx.strokeRect(-halfW, -halfH, w, h);
         ctx.fillStyle = '#e74';
-        ctx.beginPath();
-        ctx.arc(halfW - 12, 0, 4, 0, Math.PI*2);
-        ctx.fill();
-
+        ctx.beginPath(); ctx.arc(halfW - 12, 0, 4, 0, Math.PI*2); ctx.fill();
     } else if (tipo === 'sofa') {
-        // Sofá horizontal
-        // Base
-        ctx.fillStyle = '#6a3a1a';
-        ctx.fillRect(-halfW, -halfH + 6, w, h - 6);
-        // Encosto
-        ctx.fillStyle = '#8a4a22';
-        ctx.fillRect(-halfW, -halfH, w, h * 0.55);
-        // Almofadas
+        ctx.fillStyle = '#6a3a1a'; ctx.fillRect(-halfW, -halfH + 6, w, h - 6);
+        ctx.fillStyle = '#8a4a22'; ctx.fillRect(-halfW, -halfH, w, h * 0.55);
         ctx.fillStyle = '#a05828';
         ctx.fillRect(-halfW + 4, -halfH + 4, w * 0.45, h * 0.4);
         ctx.fillRect(halfW - w * 0.45 - 4, -halfH + 4, w * 0.45, h * 0.4);
-        // Botões
         ctx.fillStyle = '#4a2008';
-        ctx.beginPath();
-        ctx.arc(0, -halfH + h * 0.2, 2.5, 0, Math.PI*2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(-w * 0.3, -halfH + h * 0.2, 2.5, 0, Math.PI*2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(w * 0.3, -halfH + h * 0.2, 2.5, 0, Math.PI*2);
-        ctx.fill();
-        // Borda
-        ctx.strokeStyle = '#3a1808';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-
+        ctx.beginPath(); ctx.arc(0, -halfH + h * 0.2, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#3a1808'; ctx.lineWidth = 3; ctx.strokeRect(-halfW, -halfH, w, h);
     } else if (tipo === 'estante') {
-        // Estante de madeira com livros
-        ctx.fillStyle = '#4a2a18';
-        ctx.fillRect(-halfW, -halfH, w, h);
-        // Prateleiras
+        ctx.fillStyle = '#4a2a18'; ctx.fillRect(-halfW, -halfH, w, h);
         ctx.fillStyle = '#2a1a08';
         ctx.fillRect(-halfW + 2, -halfH + h * 0.33 - 2, w - 4, 3);
         ctx.fillRect(-halfW + 2, -halfH + h * 0.66 - 2, w - 4, 3);
-        // Livros
-        const coresLivros = ['#a33', '#36a', '#3a3', '#a63', '#639', '#963'];
+        const cores = ['#a33', '#36a', '#3a3', '#a63', '#639', '#963'];
         for (let p = 0; p < 3; p++) {
             let xL = -halfW + 4;
             while (xL < halfW - 4) {
-                const larguraLivro = 4 + Math.random() * 3;
-                if (xL + larguraLivro > halfW - 4) break;
-                ctx.fillStyle = coresLivros[Math.floor(Math.random() * coresLivros.length)];
-                const alturaLivro = (h / 3) * 0.7;
-                ctx.fillRect(xL, -halfH + p * h/3 + (h/3 - alturaLivro) - 1, larguraLivro, alturaLivro);
-                xL += larguraLivro + 1;
+                const lv = 4 + Math.random() * 3;
+                if (xL + lv > halfW - 4) break;
+                ctx.fillStyle = cores[Math.floor(Math.random() * cores.length)];
+                const al = (h / 3) * 0.7;
+                ctx.fillRect(xL, -halfH + p * h/3 + (h/3 - al) - 1, lv, al);
+                xL += lv + 1;
             }
         }
-        // Borda
-        ctx.strokeStyle = '#1a0a00';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-
+        ctx.strokeStyle = '#1a0a00'; ctx.lineWidth = 3; ctx.strokeRect(-halfW, -halfH, w, h);
     } else if (tipo === 'barril') {
-        // Barril metálico
-        // Corpo curvado (usa gradiente para simular cilindro)
         const grad = ctx.createLinearGradient(-halfW, 0, halfW, 0);
-        grad.addColorStop(0, '#5a2020');
-        grad.addColorStop(0.3, '#a03030');
-        grad.addColorStop(0.5, '#c05050');
-        grad.addColorStop(0.7, '#a03030');
+        grad.addColorStop(0, '#5a2020'); grad.addColorStop(0.3, '#a03030');
+        grad.addColorStop(0.5, '#c05050'); grad.addColorStop(0.7, '#a03030');
         grad.addColorStop(1, '#5a2020');
-        ctx.fillStyle = grad;
-        ctx.fillRect(-halfW, -halfH, w, h);
-        // Aros metálicos
+        ctx.fillStyle = grad; ctx.fillRect(-halfW, -halfH, w, h);
         ctx.fillStyle = '#3a1010';
         ctx.fillRect(-halfW, -halfH + h * 0.2, w, 4);
         ctx.fillRect(-halfW, -halfH + h * 0.5, w, 4);
         ctx.fillRect(-halfW, -halfH + h * 0.8, w, 4);
-        // Tampa
         ctx.fillStyle = '#6a2828';
-        ctx.beginPath();
-        ctx.ellipse(0, -halfH + 3, halfW * 0.9, 4, 0, 0, Math.PI*2);
-        ctx.fill();
-        ctx.strokeStyle = '#1a0000';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        // Símbolo radioativo
-        ctx.fillStyle = '#ff0';
-        ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.beginPath(); ctx.ellipse(0, -halfH + 3, halfW * 0.9, 4, 0, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#1a0000'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = '#ff0'; ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('☢', 0, 4);
-        // Borda
-        ctx.strokeStyle = '#1a0000';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-
+        ctx.strokeStyle = '#1a0000'; ctx.lineWidth = 3; ctx.strokeRect(-halfW, -halfH, w, h);
     } else if (tipo === 'mesa') {
-        // Mesa de madeira (vista de cima)
-        ctx.fillStyle = '#8a6038';
-        ctx.fillRect(-halfW, -halfH, w, h);
-        // Veios de madeira
-        ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-        ctx.lineWidth = 1;
+        ctx.fillStyle = '#8a6038'; ctx.fillRect(-halfW, -halfH, w, h);
+        ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
         for (let i = 1; i < 5; i++) {
-            ctx.beginPath();
-            ctx.moveTo(-halfW, -halfH + i * h/5);
-            ctx.lineTo(halfW, -halfH + i * h/5);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-halfW, -halfH + i * h/5); ctx.lineTo(halfW, -halfH + i * h/5); ctx.stroke();
         }
-        // Borda mais escura
-        ctx.strokeStyle = '#3a1808';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(-halfW, -halfH, w, h);
-        // Pés (aparecem como cantos escuros)
+        ctx.strokeStyle = '#3a1808'; ctx.lineWidth = 4; ctx.strokeRect(-halfW, -halfH, w, h);
         ctx.fillStyle = '#2a1008';
         ctx.fillRect(-halfW + 2, -halfH + 2, 6, 6);
         ctx.fillRect(halfW - 8, -halfH + 2, 6, 6);
@@ -1126,81 +968,49 @@ function desenharMovelTipo(tipo, cx, cy, largura, altura, opts) {
     ctx.restore();
 }
 
-// Versões legadas — item de chão usa um sprite menor
 function desenharItem(it) {
     const info = TIPOS_ITEM[it.tipo];
     const bob = Math.sin(it.bob) * 3;
-
     if (info.tipo === 'movel') {
         desenharMovelTipo(it.tipo, it.x, it.y + bob, it.largura, it.altura, {});
     } else {
-        // Arma/munição/medkit — desenho simples
         ctx.save();
         ctx.translate(it.x, it.y + bob);
-
-        // Sombra
         ctx.fillStyle = 'rgba(0,0,0,0.4)';
-        ctx.beginPath();
-        ctx.ellipse(0, 14, 14, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
-
+        ctx.beginPath(); ctx.ellipse(0, 14, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
         if (it.tipo === 'arma') {
-            ctx.fillStyle = '#444';
-            ctx.fillRect(-14, -4, 22, 8);
-            ctx.fillStyle = '#222';
-            ctx.fillRect(2, -3, 14, 6);
-            ctx.fillStyle = '#666';
-            ctx.fillRect(-14, -4, 6, 8);
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-14, -4, 22, 8);
+            ctx.fillStyle = '#444'; ctx.fillRect(-14, -4, 22, 8);
+            ctx.fillStyle = '#222'; ctx.fillRect(2, -3, 14, 6);
+            ctx.fillStyle = '#666'; ctx.fillRect(-14, -4, 6, 8);
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.strokeRect(-14, -4, 22, 8);
         } else if (it.tipo === 'municao') {
-            ctx.fillStyle = '#a85';
-            ctx.fillRect(-12, -8, 24, 16);
-            ctx.fillStyle = '#753';
-            ctx.fillRect(-12, -8, 24, 4);
-            ctx.strokeStyle = '#3a1a00';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-12, -8, 24, 16);
-            ctx.fillStyle = '#fc0';
-            ctx.font = 'bold 10px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#a85'; ctx.fillRect(-12, -8, 24, 16);
+            ctx.fillStyle = '#753'; ctx.fillRect(-12, -8, 24, 4);
+            ctx.strokeStyle = '#3a1a00'; ctx.lineWidth = 2; ctx.strokeRect(-12, -8, 24, 16);
+            ctx.fillStyle = '#fc0'; ctx.font = 'bold 10px Arial';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText('AMMO', 0, 3);
         } else if (it.tipo === 'medkit') {
-            ctx.fillStyle = '#eee';
-            ctx.fillRect(-11, -8, 22, 16);
+            ctx.fillStyle = '#eee'; ctx.fillRect(-11, -8, 22, 16);
             ctx.fillStyle = '#e33';
-            ctx.fillRect(-8, -2, 16, 4);
-            ctx.fillRect(-2, -8, 4, 16);
-            ctx.strokeStyle = '#a00';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-11, -8, 22, 16);
+            ctx.fillRect(-8, -2, 16, 4); ctx.fillRect(-2, -8, 4, 16);
+            ctx.strokeStyle = '#a00'; ctx.lineWidth = 2; ctx.strokeRect(-11, -8, 22, 16);
         }
-
         ctx.restore();
     }
 }
 
 function desenharBarricada(b) {
     desenharMovelTipo(b.tipo, b.x, b.y, b.largura, b.altura, {});
-
-    // Barra de vida
     const pct = b.vida / b.vidaMax;
     const barW = b.largura;
     const barX = b.x - barW/2;
     const barY = b.y - b.altura/2 - 12;
-
-    ctx.fillStyle = '#000';
-    ctx.fillRect(barX - 2, barY - 2, barW + 4, 8);
+    ctx.fillStyle = '#000'; ctx.fillRect(barX - 2, barY - 2, barW + 4, 8);
     ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
     ctx.fillRect(barX, barY, barW * pct, 4);
-
-    // Aviso de empurrão em grupo
     if (b.empurrando && b.empurrando > 2) {
-        ctx.fillStyle = '#f80';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = '#f80'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'center';
         ctx.fillText('⚠ ' + b.empurrando + ' empurrando!', b.x, barY - 6);
     }
 }
@@ -1210,136 +1020,74 @@ function desenharJogador() {
     const andando = (teclas['w'] || teclas['a'] || teclas['s'] || teclas['d'] ||
                      teclas['arrowup'] || teclas['arrowdown'] || teclas['arrowleft'] || teclas['arrowright']);
     const bal = andando ? Math.sin(jogador.passo) * 3 : 0;
-
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.ellipse(x, y + 12, 14, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.save();
-    ctx.translate(x, y);
-
-    ctx.fillStyle = '#2a3a6f';
-    ctx.fillRect(-7, 12, 5, 5 + bal);
-    ctx.fillRect(2, 12, 5, 5 - bal);
-
+    ctx.beginPath(); ctx.ellipse(x, y + 12, 14, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(x, y);
+    ctx.fillStyle = '#2a3a6f'; ctx.fillRect(-7, 12, 5, 5 + bal); ctx.fillRect(2, 12, 5, 5 - bal);
     ctx.fillStyle = '#3a5abf';
-    ctx.beginPath();
-    ctx.roundRect(-9, -4, 18, 16, 3);
-    ctx.fill();
-    ctx.strokeStyle = '#1a3a8f';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
+    ctx.beginPath(); ctx.roundRect(-9, -4, 18, 16, 3); ctx.fill();
+    ctx.strokeStyle = '#1a3a8f'; ctx.lineWidth = 2; ctx.stroke();
     ctx.fillStyle = '#5a7adf';
-    ctx.beginPath();
-    ctx.arc(-11, 2 + bal, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(11, 2 - bal, 4, 0, Math.PI * 2);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.arc(-11, 2 + bal, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(11, 2 - bal, 4, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#e8b48a';
-    ctx.beginPath();
-    ctx.arc(0, -8, 8, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#a07a5a';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
+    ctx.beginPath(); ctx.arc(0, -8, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#a07a5a'; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.fillStyle = '#3a2818';
-    ctx.beginPath();
-    ctx.arc(0, -10, 8, Math.PI, 0);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.arc(0, -10, 8, Math.PI, 0); ctx.fill();
     const eox = Math.cos(dir) * 2, eoy = Math.sin(dir) * 1;
     ctx.fillStyle = '#000';
     ctx.beginPath();
     ctx.arc(-3 + eox, -8 + eoy, 1.5, 0, Math.PI*2);
     ctx.arc(3 + eox, -8 + eoy, 1.5, 0, Math.PI*2);
     ctx.fill();
-
     if (inventario.indexOf('arma') >= 0) {
-        ctx.save();
-        ctx.rotate(dir);
-        ctx.fillStyle = '#222';
-        ctx.fillRect(8, -3, 14, 5);
+        ctx.save(); ctx.rotate(dir);
+        ctx.fillStyle = '#222'; ctx.fillRect(8, -3, 14, 5);
         ctx.restore();
     }
-
     ctx.restore();
 }
 
 function desenharZumbi(z) {
     const x = z.x, y = z.y, r = z.raio, t = z.tipo, cor = z.cor, cb = z.corBorda;
     const bal = Math.sin(z.passo) * 2;
-
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.ellipse(x, y + r * 0.9, r * 1.1, r * 0.4, 0, 0, Math.PI * 2);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.ellipse(x, y + r * 0.9, r * 1.1, r * 0.4, 0, 0, Math.PI * 2); ctx.fill();
     if (z.ultimoVisto && z.tempoPerdido < 0.5) {
-        ctx.strokeStyle = 'rgba(255,50,50,0.4)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(x, y, r + 8 + Math.sin(tempo*10) * 3, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,50,50,0.4)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x, y, r + 8 + Math.sin(tempo*10) * 3, 0, Math.PI * 2); ctx.stroke();
     }
-
-    ctx.save();
-    ctx.translate(x, y);
+    ctx.save(); ctx.translate(x, y);
     const esc = t === 'rapido' ? 0.75 : 1.2;
-
     ctx.fillStyle = cb;
     ctx.fillRect(-6 * esc, 10 * esc, 4 * esc, 6 * esc);
     ctx.fillRect(2 * esc, 10 * esc, 4 * esc, 6 * esc);
-
     ctx.fillStyle = cb;
-    ctx.beginPath();
-    ctx.roundRect(-9 * esc, -2 * esc, 18 * esc, 14 * esc, 4);
-    ctx.fill();
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
+    ctx.beginPath(); ctx.roundRect(-9 * esc, -2 * esc, 18 * esc, 14 * esc, 4); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
     ctx.fillStyle = cor;
     ctx.beginPath();
-    ctx.ellipse(-11 * esc, -1 * esc + bal, 4 * esc, 6 * esc, -0.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = cb;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
+    ctx.ellipse(-11 * esc, -1 * esc + bal, 4 * esc, 6 * esc, -0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = cb; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.beginPath();
-    ctx.ellipse(11 * esc, -1 * esc - bal, 4 * esc, 6 * esc, 0.5, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.ellipse(11 * esc, -1 * esc - bal, 4 * esc, 6 * esc, 0.5, 0, Math.PI * 2); ctx.fill();
     ctx.stroke();
-
     ctx.fillStyle = cor;
-    ctx.beginPath();
-    ctx.arc(0, -9 * esc, 8 * esc, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = cb;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.fillStyle = '#f00';
-    ctx.shadowColor = '#f00';
-    ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(0, -9 * esc, 8 * esc, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = cb; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f00'; ctx.shadowColor = '#f00'; ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.arc(-3 * esc, -9 * esc, 1.8 * esc, 0, Math.PI * 2);
     ctx.arc(3 * esc, -9 * esc, 1.8 * esc, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
-
     ctx.restore();
-
     const maxV = t === 'rapido' ? 20 : 70;
     if (z.vida < maxV) {
         const pct = z.vida / maxV;
         const w = r * 2;
-        ctx.fillStyle = '#000';
-        ctx.fillRect(x - r - 1, y - r - 14, w + 2, 5);
+        ctx.fillStyle = '#000'; ctx.fillRect(x - r - 1, y - r - 14, w + 2, 5);
         ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
         ctx.fillRect(x - r, y - r - 13, w * pct, 3);
     }
@@ -1361,7 +1109,6 @@ function render() {
     const y0 = Math.max(0, Math.floor(camera.y / 40) - 1);
     const x1 = Math.min(MAPA_LARGURA, Math.ceil((camera.x + LARGURA) / 40) + 1);
     const y1 = Math.min(MAPA_ALTURA, Math.ceil((camera.y + ALTURA) / 40) + 1);
-
     for (let y = y0; y < y1; y++)
         for (let x = x0; x < x1; x++)
             desenharTile(x * 40, y * 40, MAPA[y][x]);
@@ -1380,27 +1127,26 @@ function render() {
 
     desenharJogador();
 
-    // Se está segurando item, desenha ele na frente do jogador
     if (itemNaMao) {
         const info = TIPOS_ITEM[itemNaMao.tipo];
-
-        // Preview do local onde vai cair
         const mmX = mouse.x + camera.x;
         const mmY = mouse.y + camera.y;
         const ddx = mmX - jogador.x, ddy = mmY - jogador.y;
         const d = Math.sqrt(ddx*ddx + ddy*ddy);
         const alcance = 90;
         let px, py;
-        if (d > alcance) {
-            const f = alcance / d;
-            px = jogador.x + ddx * f;
-            py = jogador.y + ddy * f;
-        } else { px = mmX; py = mmY; }
-
-        const cabe = !colideTudo(px, py, Math.max(info.largura, info.altura) / 2 - 2, null);
+        if (d > alcance) { const f = alcance / d; px = jogador.x + ddx * f; py = jogador.y + ddy * f; }
+        else { px = mmX; py = mmY; }
+        const bloqueiaParede = colideParedes(px, py, Math.max(info.largura, info.altura) / 2 - 2);
+        let sobrepoe = false;
+        for (let i = 0; i < barricadas.length; i++) {
+            const b = barricadas[i];
+            if (circuloSobrepoeRet(px, py, Math.max(info.largura, info.altura)/2, b.x, b.y, b.largura, b.altura)) {
+                sobrepoe = true; break;
+            }
+        }
+        const cabe = !bloqueiaParede && !sobrepoe;
         desenharMovelTipo(itemNaMao.tipo, px, py, info.largura, info.altura, { preview: true, ghost: !cabe });
-
-        // Desenha o item real na "mão" do jogador (levemente acima)
         desenharMovelTipo(itemNaMao.tipo, itemNaMao.x, itemNaMao.y - 15, info.largura * 0.85, info.altura * 0.85, { alpha: 0.9 });
     }
 
@@ -1409,15 +1155,10 @@ function render() {
         if (p.tipo === 'tiro') {
             ctx.strokeStyle = 'rgba(255, 230, 100, ' + (p.vida * 12) + ')';
             ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(p.x1, p.y1);
-            ctx.lineTo(p.x2, p.y2);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(p.x1, p.y1); ctx.lineTo(p.x2, p.y2); ctx.stroke();
         } else if (p.tipo === 'sangue') {
             ctx.fillStyle = 'rgba(200, 30, 30, ' + (p.vida * 1.5) + ')';
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill();
         }
     }
 
@@ -1434,7 +1175,6 @@ function render() {
     ctx.moveTo(mouse.x, mouse.y + 6); ctx.lineTo(mouse.x, mouse.y + 16);
     ctx.stroke();
 
-    // Instruções
     if (itemNaMao) {
         ctx.fillStyle = 'rgba(255,200,0,0.95)';
         ctx.font = 'bold 18px Arial';
