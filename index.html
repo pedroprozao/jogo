@@ -2,121 +2,76 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🧟 Zumbi House V6</title>
+<title>Zumbi House</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-html, body {
-    width: 100%;
-    min-height: 100vh;
+body {
     background: #0a0a0c;
     color: #eee;
     font-family: 'Courier New', monospace;
-    user-select: none;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-body {
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px;
-    gap: 6px;
+    min-height: 100vh;
 }
-
-/* ===== HUD ===== */
 #hud {
     display: flex;
-    gap: 14px;
+    gap: 20px;
     background: #1a1a1e;
-    padding: 8px 18px;
+    padding: 10px 20px;
     border: 2px solid #3a3a44;
     border-radius: 8px;
-    font-size: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-    max-width: 100%;
+    margin-bottom: 10px;
+    font-size: 16px;
 }
-
-#hud > div { white-space: nowrap; }
 #hud span { color: #4af; font-weight: bold; }
-
-#hud .vida-baixa { color: #f44 !important; animation: piscar 0.5s infinite; }
-@keyframes piscar { 50% { opacity: 0.35; } }
-
-/* ===== CANVAS WRAPPER (mantém proporção) ===== */
-#canvasWrap {
-    position: relative;
-    width: 100%;
+#erro {
+    background: #400;
+    color: #f88;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
     max-width: 960px;
-    aspect-ratio: 960 / 640;
+    display: none;
+    white-space: pre-wrap;
+}
+canvas {
+    background: #1a1a1e;
     border: 3px solid #3a3a44;
     border-radius: 8px;
-    box-shadow: 0 0 40px rgba(0,0,0,0.9);
-    overflow: hidden;
-    background: #0a0a0c;
-}
-
-canvas {
     display: block;
-    width: 100%;
-    height: 100%;
-    cursor: none;
-    outline: none;
-    image-rendering: pixelated;
+    cursor: crosshair;
 }
-
-/* ===== INVENTÁRIO ===== */
 #inventario {
-    width: 100%;
-    max-width: 960px;
+    margin-top: 10px;
     background: #1a1a1e;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: 2px solid #3a3a44;
     border-radius: 8px;
+    width: 960px;
     font-size: 13px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
-
-#itens {
-    display: flex;
-    gap: 8px;
-    margin-top: 6px;
-    flex-wrap: wrap;
-}
-
+#itens { display: flex; gap: 10px; margin-top: 6px; }
 .item-slot {
-    flex: 1 1 120px;
+    flex: 1;
     background: #2a2a33;
     border: 2px solid #444;
     border-radius: 6px;
-    padding: 6px 8px;
+    padding: 8px;
     text-align: center;
     font-size: 12px;
-    transition: all 0.2s;
 }
-
 .item-slot.vazio { opacity: 0.3; }
-
-.item-slot.selecionado {
-    border-color: #4CAF50;
-    background: #2a4a2a;
-    box-shadow: 0 0 12px #4CAF50;
-}
-
-/* ===== AVISO ===== */
+.item-slot.selecionado { border-color: #4CAF50; background: #2a4a2a; }
 #aviso {
+    margin-top: 8px;
     color: #ffcc00;
     font-size: 12px;
     text-align: center;
     max-width: 960px;
-    padding: 0 6px;
 }
-
-/* ===== GAME OVER ===== */
 #gameOver {
     position: fixed;
     top: 50%; left: 50%;
@@ -127,34 +82,13 @@ canvas {
     border-radius: 12px;
     text-align: center;
     z-index: 1000;
-    box-shadow: 0 0 80px #c00, inset 0 0 40px rgba(200,0,0,0.2);
-    animation: aparecerGO 0.5s ease-out;
-    max-width: 90vw;
+    box-shadow: 0 0 80px #c00;
 }
-
-@keyframes aparecerGO {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-#gameOver h1 {
-    color: #c00;
-    font-size: 48px;
-    margin-bottom: 18px;
-    text-shadow: 0 0 25px #c00;
-    animation: pulsarGO 1.5s infinite;
-}
-
-@keyframes pulsarGO {
-    0%, 100% { text-shadow: 0 0 25px #c00; }
-    50%      { text-shadow: 0 0 50px #f00, 0 0 80px #f00; }
-}
-
-#gameOver p { font-size: 18px; margin-bottom: 8px; }
-
+#gameOver h1 { color: #c00; font-size: 48px; margin-bottom: 20px; }
+#gameOver p { font-size: 18px; margin-bottom: 10px; }
 #gameOver button {
-    margin-top: 22px;
-    padding: 14px 35px;
+    margin-top: 20px;
+    padding: 12px 30px;
     background: #c00;
     color: white;
     border: none;
@@ -163,38 +97,13 @@ canvas {
     cursor: pointer;
     font-family: inherit;
     font-weight: bold;
-    transition: all 0.2s;
 }
-
-#gameOver button:hover {
-    background: #e00;
-    transform: scale(1.05);
-    box-shadow: 0 0 25px #e00;
-}
-
 .escondido { display: none !important; }
-
-/* Aviso de foco */
-#avisoFoco {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffcc00;
-    font-size: 20px;
-    text-align: center;
-    padding: 20px;
-    cursor: pointer;
-    z-index: 50;
-    backdrop-filter: blur(3px);
-}
-
-#avisoFoco.escondido { display: none; }
 </style>
 </head>
 <body>
+
+<div id="erro"></div>
 
 <div id="hud">
     <div>❤️ Vida: <span id="vida">100</span></div>
@@ -204,38 +113,44 @@ canvas {
     <div>🪵 Barricadas: <span id="barricadas">0</span></div>
 </div>
 
-<div id="canvasWrap">
-    <canvas id="canvas" width="960" height="640" tabindex="0"></canvas>
-    <div id="avisoFoco">🖱️ CLIQUE AQUI para começar<br><small>(ativa o teclado e o áudio)</small></div>
-</div>
+<canvas id="canvas" width="960" height="640"></canvas>
 
 <div id="inventario">
-    <strong>🎒 Inventário (1-5 pra usar)</strong>
+    <strong>🎒 Inventário (1-5)</strong>
     <div id="itens"></div>
 </div>
 
 <div id="aviso">
-    🖱️ Mouse mira | 🖱️ Clique esq = atirar | 🖱️ Clique dir = empurrar item |
-    ⌨️ WASD/Setas = andar | ⇧ Shift = correr | E = colocar barricada | Q = devolver móvel
+    WASD/Setas = andar | Shift = correr | Mouse = mirar | Clique esq = atirar |
+    Clique dir = empurrar | 1-5 = usar item | E = colocar barricada | Q = devolver
 </div>
 
 <div id="gameOver" class="escondido">
     <h1>💀 VOCÊ MORREU 💀</h1>
-    <p>Você sobreviveu <span id="tempoFinal">0</span> segundos</p>
+    <p>Sobreviveu <span id="tempoFinal">0</span>s</p>
     <p>Zumbis mortos: <span id="zumbisMortos">0</span></p>
     <button onclick="location.reload()">🔁 Tentar Novamente</button>
 </div>
 
 <script>
-'use strict';
+"use strict";
 
-// ===================================================================
-//  POLYFILL roundRect
-// ===================================================================
+// ===== TRATADOR DE ERROS (mostra na tela se algo quebrar) =====
+window.onerror = function(msg, url, line) {
+    const el = document.getElementById('erro');
+    if (el) {
+        el.style.display = 'block';
+        el.textContent = '⚠️ ERRO na linha ' + line + ': ' + msg;
+    }
+    return false;
+};
+
+try {
+
+// ===== POLYFILL roundRect =====
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
         if (typeof r === 'number') r = [r, r, r, r];
-        if (w < 2 * r[0]) r[0] = w / 2;
         this.beginPath();
         this.moveTo(x + r[0], y);
         this.arcTo(x + w, y, x + w, y + h, r[1]);
@@ -247,145 +162,88 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     };
 }
 
-// ===================================================================
-//  CANVAS + ESTADO GLOBAL
-// ===================================================================
+// ===== CANVAS =====
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const LARGURA = canvas.width;
-const ALTURA = canvas.height;
-
+const LARGURA = 960;
+const ALTURA = 640;
 const TAMANHO_TILE = 40;
 const MAPA_LARGURA = 60;
 const MAPA_ALTURA = 40;
 const LARGURA_MUNDO = MAPA_LARGURA * TAMANHO_TILE;
 const ALTURA_MUNDO = MAPA_ALTURA * TAMANHO_TILE;
 
-let zumbisMortosContador = 0;
+// ===== ESTADO GLOBAL =====
 let audioCtx = null;
-let jogoIniciado = false;
+let jogador, zumbis, itens, particulas;
+let barricadas = [];
+let manchasSangue = [];
+let movelCarregado = null;
+let inventario = [];
+let itemSelecionado = 0;
+let tempo = 0;
+let rodando = true;
+let spawnTimer = 0;
+let ultimoFrame = 0;
+let gemidoTimer = 0;
+let mouse = { x: LARGURA/2, y: ALTURA/2 };
+let segurandoE = false;
+let botaoDireitoPressionado = false;
+let camera = { x: 0, y: 0 };
+let zumbisMortosContador = 0;
 
-// ===================================================================
-//  ÁUDIO
-// ===================================================================
+// ===== ÁUDIO =====
 function initAudio() {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-    } catch (e) { /* ignora */ }
+    } catch(e) {}
 }
 
-function tocarTiro() {
+function toca(freqIni, freqFim, dur, tipo, vol) {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'square';
-    o.frequency.setValueAtTime(220, audioCtx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.15);
-    g.gain.setValueAtTime(0.22, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.2);
+    try {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = tipo;
+        o.frequency.setValueAtTime(freqIni, audioCtx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(Math.max(1, freqFim), audioCtx.currentTime + dur);
+        g.gain.setValueAtTime(vol, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        o.connect(g).connect(audioCtx.destination);
+        o.start();
+        o.stop(audioCtx.currentTime + dur + 0.05);
+    } catch(e) {}
 }
 
-function tocarDano() {
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'sawtooth';
-    o.frequency.setValueAtTime(140, audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.25);
-    g.gain.setValueAtTime(0.28, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.3);
-}
-
-function tocarCura() {
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'sine';
-    o.frequency.setValueAtTime(440, audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(880, audioCtx.currentTime + 0.3);
-    g.gain.setValueAtTime(0.2, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.4);
-}
-
-function tocarColeta() {
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'triangle';
-    o.frequency.setValueAtTime(600, audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(900, audioCtx.currentTime + 0.1);
-    g.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.15);
-}
-
-function tocarZumbiMorto() {
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'sawtooth';
-    o.frequency.setValueAtTime(180, audioCtx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.4);
-    g.gain.setValueAtTime(0.22, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.5);
-}
+const tocarTiro = () => toca(220, 60, 0.18, 'square', 0.2);
+const tocarDano = () => toca(140, 70, 0.3, 'sawtooth', 0.25);
+const tocarCura = () => toca(440, 880, 0.35, 'sine', 0.18);
+const tocarColeta = () => toca(600, 900, 0.12, 'triangle', 0.15);
+const tocarZumbiMorto = () => toca(180, 40, 0.45, 'sawtooth', 0.2);
+const tocarBarricadaQuebrada = () => toca(60, 30, 0.7, 'square', 0.28);
 
 function tocarGemido() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    const lfo = audioCtx.createOscillator(), lfoGain = audioCtx.createGain();
-    lfo.frequency.value = 6;
-    lfoGain.gain.value = 15;
-    lfo.connect(lfoGain).connect(o.frequency);
-    o.type = 'sawtooth';
-    o.frequency.setValueAtTime(120 + Math.random()*40, audioCtx.currentTime);
-    g.gain.setValueAtTime(0, audioCtx.currentTime);
-    g.gain.linearRampToValueAtTime(0.09, audioCtx.currentTime + 0.2);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
-    o.connect(g).connect(audioCtx.destination);
-    lfo.start(); o.start();
-    o.stop(audioCtx.currentTime + 1.1);
-    lfo.stop(audioCtx.currentTime + 1.1);
+    try {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(120 + Math.random()*40, audioCtx.currentTime);
+        g.gain.setValueAtTime(0, audioCtx.currentTime);
+        g.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.2);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+        o.connect(g).connect(audioCtx.destination);
+        o.start();
+        o.stop(audioCtx.currentTime + 1.1);
+    } catch(e) {}
 }
 
 function tocarArrombando() {
-    if (!audioCtx) return;
-    for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-            if (!audioCtx) return;
-            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.type = 'square';
-            o.frequency.setValueAtTime(90 + Math.random()*40, audioCtx.currentTime);
-            g.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            o.connect(g).connect(audioCtx.destination);
-            o.start(); o.stop(audioCtx.currentTime + 0.12);
-        }, i * 90);
-    }
+    toca(90 + Math.random()*40, 50, 0.1, 'square', 0.2);
 }
 
-function tocarBarricadaQuebrada() {
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'square';
-    o.frequency.setValueAtTime(60, audioCtx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.6);
-    g.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.75);
-}
-
-// ===================================================================
-//  MAPA
-//  Tipos: 0=madeira, 1=parede, 2=asfalto, 3=grama,
-//         4=calçada, 5=carpete, 6=azulejo
-// ===================================================================
+// ===== MAPA =====
 function criarMapa() {
     const m = [];
     for (let y = 0; y < MAPA_ALTURA; y++) {
@@ -393,7 +251,9 @@ function criarMapa() {
         for (let x = 0; x < MAPA_LARGURA; x++) {
             if (x === 0 || y === 0 || x === MAPA_LARGURA-1 || y === MAPA_ALTURA-1) {
                 linha.push(1);
-            } else linha.push(3);
+            } else {
+                linha.push(3);
+            }
         }
         m.push(linha);
     }
@@ -407,83 +267,89 @@ function criarMapa() {
         }
     }
 
-    // Interior da casa
-    for (let y = 4; y < 20; y++) {
+    // Casa
+    for (let y = 4; y < 20; y++)
         for (let x = 4; x < 39; x++) m[y][x] = 0;
-    }
-    // Banheiro
-    for (let y = 17; y < 20; y++) {
+    for (let y = 17; y < 20; y++)
         for (let x = 31; x < 39; x++) m[y][x] = 6;
-    }
-    // Quarto com carpete
-    for (let y = 4; y < 12; y++) {
+    for (let y = 4; y < 12; y++)
         for (let x = 4; x < 21; x++) m[y][x] = 5;
-    }
 
-    // Paredes externas da casa
+    // Paredes externas
     for (let x = 3; x < 40; x++) { m[3][x] = 1; m[20][x] = 1; }
     for (let y = 3; y < 21; y++) { m[y][3] = 1; m[y][39] = 1; }
 
-    // Porta principal
+    // Porta
     m[20][20] = 0; m[20][21] = 0;
 
-    // Parede vertical central
-    for (let y = 4; y < 20; y++) {
+    // Parede central vertical
+    for (let y = 4; y < 20; y++)
         if (y !== 10 && y !== 11) m[y][21] = 1;
-    }
+
     // Parede horizontal
-    for (let x = 4; x < 39; x++) {
+    for (let x = 4; x < 39; x++)
         if (x !== 12 && x !== 13 && x !== 30 && x !== 31) m[12][x] = 1;
-    }
 
     // Quarto canto
     for (let y = 13; y < 20; y++) m[y][30] = 1;
     for (let x = 30; x < 39; x++) m[16][x] = 1;
     m[16][33] = 0;
 
-    // Banheiro interno
+    // Banheiro
     for (let y = 17; y < 20; y++) m[y][31] = 1;
     m[17][35] = 0;
 
-    // Muros do quintal
+    // Muros
     for (let y = 21; y < 25; y++) { m[y][8] = 1; m[y][55] = 1; }
 
-    // Obstáculos na rua
+    // Obstáculos
     m[28][8] = 1; m[28][9] = 1;
     m[28][25] = 1; m[28][26] = 1;
     m[28][45] = 1; m[28][46] = 1;
-
-    // Carros
     m[33][12] = 1; m[33][13] = 1; m[33][14] = 1;
     m[33][40] = 1; m[33][41] = 1; m[33][42] = 1;
 
     return m;
 }
 
-let MAPA = criarMapa();
+const MAPA = criarMapa();
 
-// ===================================================================
-//  ESTADO DO JOGO
-// ===================================================================
-let jogador, zumbis, itens, movelCarregado, particulas;
-let barricadas = [];
-let manchasSangue = [];
-const MAX_MANCHAS = 800;
-let tempo = 0;
-let rodando = true;
-let inventario = [];
-let itemSelecionado = 0;
-let spawnTimer = 0;
-let ultimoFrame = 0;
-let gemidoTimer = 0;
-let mouse = { x: LARGURA/2, y: ALTURA/2 };
-let segurandoE = false;
-let botaoDireitoPressionado = false;
-let camera = { x: 0, y: 0 };
+// ===== COLISÃO =====
+function colide(x, y, raio) {
+    const x1 = Math.floor((x - raio) / TAMANHO_TILE);
+    const y1 = Math.floor((y - raio) / TAMANHO_TILE);
+    const x2 = Math.floor((x + raio) / TAMANHO_TILE);
+    const y2 = Math.floor((y + raio) / TAMANHO_TILE);
 
-// ===================================================================
-//  TIPOS DE ITEM
-// ===================================================================
+    for (let ty = y1; ty <= y2; ty++) {
+        for (let tx = x1; tx <= x2; tx++) {
+            if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return true;
+            if (MAPA[ty][tx] === 1) return true;
+        }
+    }
+    for (let i = 0; i < barricadas.length; i++) {
+        const b = barricadas[i];
+        const dx = x - b.x, dy = y - b.y;
+        if (Math.sqrt(dx*dx + dy*dy) < raio + b.raio) return true;
+    }
+    return false;
+}
+
+function temVisao(x1, y1, x2, y2) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const passos = Math.ceil(dist / 15);
+    for (let i = 1; i < passos; i++) {
+        const t = i / passos;
+        const tx = Math.floor((x1 + dx * t) / TAMANHO_TILE);
+        const ty = Math.floor((y1 + dy * t) / TAMANHO_TILE);
+        if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return false;
+        if (MAPA[ty][tx] === 1) return false;
+    }
+    return true;
+}
+
+// ===== TIPOS DE ITEM =====
 const TIPOS_ITEM = {
     'arma':       { emoji: '🔫', nome: 'Pistola',   cor: '#888', cor2: '#555' },
     'municao':    { emoji: '📦', nome: 'Munição',   cor: '#a85', cor2: '#753' },
@@ -497,137 +363,64 @@ const TIPOS_ITEM = {
     'mesa':       { emoji: '🪑', nome: 'Mesa',      cor: '#975', cor2: '#643', movel: true, tamanho: 18, vida: 100 },
 };
 
-// ===================================================================
-//  ENTIDADES
-// ===================================================================
+// ===== ENTIDADES =====
 function criarJogador() {
-    return {
-        x: 700, y: 550, raio: 12, vel: 190,
-        vida: 100, municao: 0, direcao: 0,
-        passo: 0
-    };
+    return { x: 700, y: 550, raio: 12, vel: 190, vida: 100, municao: 0, direcao: 0, passo: 0 };
 }
-
 function criarZumbiRapido(x, y) {
-    return {
-        x, y, raio: 10, vel: 130 + Math.random() * 30,
-        vida: 20, dano: 6, ultimoDano: 0,
-        tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a',
-        passo: 0, ultimoVisto: null, tempoPerdido: 0, memoria: 3,
-        vagarPonto: null
-    };
+    return { x, y, raio: 10, vel: 130 + Math.random()*30, vida: 20, dano: 6, ultimoDano: 0,
+             tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a', passo: 0,
+             ultimoVisto: null, tempoPerdido: 0, memoria: 3, vagarPonto: null };
 }
-
 function criarZumbiForte(x, y) {
-    return {
-        x, y, raio: 18, vel: 50 + Math.random() * 15,
-        vida: 70, dano: 15, ultimoDano: 0,
-        tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a',
-        passo: 0, ultimoVisto: null, tempoPerdido: 0, memoria: 5,
-        vagarPonto: null
-    };
+    return { x, y, raio: 18, vel: 50 + Math.random()*15, vida: 70, dano: 15, ultimoDano: 0,
+             tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a', passo: 0,
+             ultimoVisto: null, tempoPerdido: 0, memoria: 5, vagarPonto: null };
 }
-
 function criarItem(x, y, tipo) {
     return { x, y, tipo, raio: 10, bob: Math.random() * Math.PI * 2 };
 }
 
-// ===================================================================
-//  COLISÃO
-// ===================================================================
-function colide(x, y, raio) {
-    const x1 = Math.floor((x - raio) / TAMANHO_TILE);
-    const y1 = Math.floor((y - raio) / TAMANHO_TILE);
-    const x2 = Math.floor((x + raio) / TAMANHO_TILE);
-    const y2 = Math.floor((y + raio) / TAMANHO_TILE);
-
-    for (let ty = y1; ty <= y2; ty++) {
-        for (let tx = x1; tx <= x2; tx++) {
-            if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return true;
-            if (MAPA[ty][tx] === 1) return true;
-        }
-    }
-    for (const b of barricadas) {
-        const dx = x - b.x, dy = y - b.y;
-        if (Math.sqrt(dx*dx + dy*dy) < raio + b.raio) return true;
-    }
-    return false;
-}
-
-function temLinhaDeVisao(x1, y1, x2, y2) {
-    const dx = x2 - x1, dy = y2 - y1;
-    const dist = Math.hypot(dx, dy);
-    const steps = Math.ceil(dist / 15);
-    for (let i = 1; i < steps; i++) {
-        const t = i / steps;
-        const px = x1 + dx * t;
-        const py = y1 + dy * t;
-        const tx = Math.floor(px / TAMANHO_TILE);
-        const ty = Math.floor(py / TAMANHO_TILE);
-        if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return false;
-        if (MAPA[ty][tx] === 1) return false;
-    }
-    return true;
-}
-
-// ===================================================================
-//  INPUT — Corrigido para funcionar sempre
-// ===================================================================
+// ===== INPUT =====
 const teclas = {};
 
-function tratarKeyDown(e) {
+function onKeyDown(e) {
     initAudio();
     const k = e.key.toLowerCase();
     teclas[k] = true;
-    teclas[e.key] = true;
-    teclas[e.code] = true;
 
-    if (e.key >= '1' && e.key <= '5') {
-        usarItem(parseInt(e.key) - 1);
-    }
-    if (e.key === ' ') {
-        e.preventDefault();
-        atirar();
-    }
+    if (e.key >= '1' && e.key <= '5') usarItem(parseInt(e.key) - 1);
+    if (e.key === ' ') { e.preventDefault(); atirar(); }
     if (k === 'e') segurandoE = true;
     if (k === 'q' && movelCarregado) {
         adicionarItem(movelCarregado);
         movelCarregado = null;
         atualizarInventario();
     }
-
-    // Evita scroll com setas / espaço
-    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) {
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) {
         e.preventDefault();
     }
 }
 
-function tratarKeyUp(e) {
+function onKeyUp(e) {
     const k = e.key.toLowerCase();
     teclas[k] = false;
-    teclas[e.key] = false;
-    teclas[e.code] = false;
     if (k === 'e') segurandoE = false;
 }
 
-window.addEventListener('keydown', tratarKeyDown, { capture: true });
-window.addEventListener('keyup', tratarKeyUp, { capture: true });
-document.addEventListener('keydown', tratarKeyDown, { capture: true });
-document.addEventListener('keyup', tratarKeyUp, { capture: true });
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
 
-// Mouse
-function atualizarMouse(e) {
+canvas.addEventListener('mousemove', function(e) {
     const rect = canvas.getBoundingClientRect();
-    mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-    mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
-}
+    mouse.x = (e.clientX - rect.left) * (LARGURA / rect.width);
+    mouse.y = (e.clientY - rect.top) * (ALTURA / rect.height);
+});
 
-canvas.addEventListener('mousemove', atualizarMouse);
-canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
-canvas.addEventListener('mousedown', e => {
+canvas.addEventListener('mousedown', function(e) {
     initAudio();
-    canvas.focus();
     if (e.button === 0) atirar();
     if (e.button === 2) {
         botaoDireitoPressionado = true;
@@ -635,22 +428,11 @@ canvas.addEventListener('mousedown', e => {
     }
 });
 
-window.addEventListener('mouseup', e => {
+window.addEventListener('mouseup', function(e) {
     if (e.button === 2) botaoDireitoPressionado = false;
 });
 
-// Clique no aviso de foco
-const avisoFoco = document.getElementById('avisoFoco');
-avisoFoco.addEventListener('click', () => {
-    initAudio();
-    canvas.focus();
-    avisoFoco.classList.add('escondido');
-    jogoIniciado = true;
-});
-
-// ===================================================================
-//  INVENTÁRIO
-// ===================================================================
+// ===== INVENTÁRIO =====
 function adicionarItem(tipo) {
     if (inventario.length >= 5) inventario[itemSelecionado] = tipo;
     else inventario.push(tipo);
@@ -676,7 +458,7 @@ function usarItem(idx) {
         inventario.splice(idx, 1);
         itemSelecionado = 0;
         tocarColeta();
-    } else if (info.movel) {
+    } else if (info && info.movel) {
         if (movelCarregado) return;
         movelCarregado = tipo;
         inventario.splice(idx, 1);
@@ -697,35 +479,30 @@ function atualizarInventario() {
         const tipo = inventario[i];
         if (tipo) {
             const info = TIPOS_ITEM[tipo];
-            slot.innerHTML = `${i+1}. ${info.emoji} ${info.nome}`;
+            slot.textContent = (i+1) + '. ' + info.emoji + ' ' + info.nome;
         } else {
             slot.classList.add('vazio');
-            slot.innerHTML = `${i+1}. vazio`;
+            slot.textContent = (i+1) + '. vazio';
         }
         div.appendChild(slot);
     }
 }
 
 function atualizarHUD() {
-    const vidaEl = document.getElementById('vida');
-    vidaEl.textContent = Math.max(0, Math.round(jogador.vida));
-    if (jogador.vida < 30) vidaEl.classList.add('vida-baixa');
-    else vidaEl.classList.remove('vida-baixa');
-
+    if (!jogador) return;
+    document.getElementById('vida').textContent = Math.max(0, Math.round(jogador.vida));
     document.getElementById('municao').textContent = jogador.municao;
     document.getElementById('tempo').textContent = Math.floor(tempo);
     document.getElementById('zumbis').textContent = zumbis.length;
-    document.getElementById('barricadas').textContent = barricadas.filter(b => b.vida > 0).length;
+    document.getElementById('barricadas').textContent = barricadas.length;
 }
 
-// ===================================================================
-//  AÇÕES
-// ===================================================================
+// ===== AÇÕES =====
 function atirar() {
     initAudio();
     if (!rodando) return;
     if (jogador.municao <= 0) return;
-    if (!inventario.includes('arma')) return;
+    if (inventario.indexOf('arma') < 0) return;
 
     jogador.municao--;
     tocarTiro();
@@ -734,7 +511,8 @@ function atirar() {
     const dirY = Math.sin(jogador.direcao);
 
     let alvo = null, menorDist = 500;
-    for (const z of zumbis) {
+    for (let i = 0; i < zumbis.length; i++) {
+        const z = zumbis[i];
         const dx = z.x - jogador.x, dy = z.y - jogador.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist > menorDist) continue;
@@ -770,30 +548,23 @@ function tentarEmpurrarItem() {
     const mundoMouseY = mouse.y + camera.y;
 
     let maisProximo = null, menorDist = 70;
-
-    for (const it of itens) {
+    for (let i = 0; i < itens.length; i++) {
+        const it = itens[i];
         const info = TIPOS_ITEM[it.tipo];
         if (!info.movel) continue;
-        const d = Math.hypot(it.x - mundoMouseX, it.y - mundoMouseY);
-        if (d < menorDist) {
-            menorDist = d;
-            maisProximo = it;
-        }
+        const d = Math.sqrt((it.x - mundoMouseX)**2 + (it.y - mundoMouseY)**2);
+        if (d < menorDist) { menorDist = d; maisProximo = it; }
     }
-
     if (!maisProximo) return;
 
     const dx = maisProximo.x - jogador.x;
     const dy = maisProximo.y - jogador.y;
-    const dist = Math.hypot(dx, dy);
+    const dist = Math.sqrt(dx*dx + dy*dy);
     if (dist > jogador.raio + maisProximo.raio + 40) return;
 
     const info = TIPOS_ITEM[maisProximo.tipo];
-    const dirX = Math.cos(jogador.direcao);
-    const dirY = Math.sin(jogador.direcao);
-
-    const nx = maisProximo.x + dirX * 45;
-    const ny = maisProximo.y + dirY * 45;
+    const nx = maisProximo.x + Math.cos(jogador.direcao) * 45;
+    const ny = maisProximo.y + Math.sin(jogador.direcao) * 45;
 
     if (!colide(nx, ny, info.tamanho)) {
         maisProximo.x = nx;
@@ -810,8 +581,9 @@ function tentarColocarBarricada() {
     const py = jogador.y + Math.sin(jogador.direcao) * (jogador.raio + info.tamanho + 4);
 
     if (colide(px, py, info.tamanho)) return;
-    for (const b of barricadas) {
-        if (Math.hypot(b.x - px, b.y - py) < info.tamanho + b.raio) return;
+    for (let i = 0; i < barricadas.length; i++) {
+        const b = barricadas[i];
+        if (Math.sqrt((b.x-px)**2 + (b.y-py)**2) < info.tamanho + b.raio) return;
     }
 
     barricadas.push({
@@ -826,7 +598,7 @@ function tentarColocarBarricada() {
 }
 
 function adicionarSangue(x, y, escala) {
-    if (manchasSangue.length >= MAX_MANCHAS) manchasSangue.shift();
+    if (manchasSangue.length >= 800) manchasSangue.shift();
     const num = 4 + Math.floor(Math.random() * 4);
     for (let i = 0; i < num; i++) {
         const ang = Math.random() * Math.PI * 2;
@@ -835,16 +607,14 @@ function adicionarSangue(x, y, escala) {
             x: x + Math.cos(ang) * dist,
             y: y + Math.sin(ang) * dist,
             raio: 3 + Math.random() * escala * 0.8,
-            cor: `rgba(${120 + Math.random()*60|0}, ${10 + Math.random()*20|0}, ${10 + Math.random()*20|0}, ${0.5 + Math.random()*0.4})`,
+            cor: 'rgba(' + (120 + Math.random()*60|0) + ',' + (10 + Math.random()*20|0) + ',' + (10 + Math.random()*20|0) + ',' + (0.5 + Math.random()*0.4) + ')',
             rot: Math.random() * Math.PI * 2,
             escalaY: 0.6 + Math.random() * 0.8
         });
     }
 }
 
-// ===================================================================
-//  INICIAR
-// ===================================================================
+// ===== INICIAR =====
 function iniciar() {
     jogador = criarJogador();
     zumbis = [];
@@ -881,8 +651,9 @@ function iniciar() {
         [2000, 400, 'estante'], [2100, 200, 'caixagrande'], [700, 900, 'barril'],
     ];
 
-    for (const [x, y, tipo] of posicoesItens) {
-        if (!colide(x, y, 15)) itens.push(criarItem(x, y, tipo));
+    for (let i = 0; i < posicoesItens.length; i++) {
+        const p = posicoesItens[i];
+        if (!colide(p[0], p[1], 15)) itens.push(criarItem(p[0], p[1], p[2]));
     }
 
     atualizarHUD();
@@ -890,12 +661,9 @@ function iniciar() {
     requestAnimationFrame(loop);
 }
 
-// ===================================================================
-//  UPDATE
-// ===================================================================
+// ===== UPDATE =====
 function atualizar(dt) {
     if (!rodando) return;
-
     tempo += dt;
     spawnTimer += dt;
     gemidoTimer += dt;
@@ -905,20 +673,20 @@ function atualizar(dt) {
         tocarGemido();
     }
 
-    const mundoMouseX = mouse.x + camera.x;
-    const mundoMouseY = mouse.y + camera.y;
-    jogador.direcao = Math.atan2(mundoMouseY - jogador.y, mundoMouseX - jogador.x);
+    const mmX = mouse.x + camera.x;
+    const mmY = mouse.y + camera.y;
+    jogador.direcao = Math.atan2(mmY - jogador.y, mmX - jogador.x);
 
     let dx = 0, dy = 0;
-    if (teclas['w'] || teclas['arrowup'] || teclas['ArrowUp']) dy -= 1;
-    if (teclas['s'] || teclas['arrowdown'] || teclas['ArrowDown']) dy += 1;
-    if (teclas['a'] || teclas['arrowleft'] || teclas['ArrowLeft']) dx -= 1;
-    if (teclas['d'] || teclas['arrowright'] || teclas['ArrowRight']) dx += 1;
+    if (teclas['w'] || teclas['arrowup']) dy -= 1;
+    if (teclas['s'] || teclas['arrowdown']) dy += 1;
+    if (teclas['a'] || teclas['arrowleft']) dx -= 1;
+    if (teclas['d'] || teclas['arrowright']) dx += 1;
 
     if (dx !== 0 || dy !== 0) {
         const len = Math.sqrt(dx*dx + dy*dy);
         dx /= len; dy /= len;
-        const correr = teclas['shift'] || teclas['Shift'] ? 1.55 : 1;
+        const correr = (teclas['shift']) ? 1.55 : 1;
         const nx = jogador.x + dx * jogador.vel * correr * dt;
         const ny = jogador.y + dy * jogador.vel * correr * dt;
         if (!colide(nx, jogador.y, jogador.raio)) jogador.x = nx;
@@ -933,14 +701,12 @@ function atualizar(dt) {
         }
     }
 
-    if (botaoDireitoPressionado && !movelCarregado) {
-        tentarEmpurrarItem();
-    }
+    if (botaoDireitoPressionado && !movelCarregado) tentarEmpurrarItem();
 
     for (let i = itens.length - 1; i >= 0; i--) {
         const it = itens[i];
         it.bob += dt * 3;
-        const d = Math.hypot(it.x - jogador.x, it.y - jogador.y);
+        const d = Math.sqrt((it.x-jogador.x)**2 + (it.y-jogador.y)**2);
         if (d < jogador.raio + it.raio + 8) {
             adicionarItem(it.tipo);
             itens.splice(i, 1);
@@ -955,7 +721,6 @@ function atualizar(dt) {
         else if (lado === 1) { sx = LARGURA_MUNDO - 60; sy = Math.random() * ALTURA_MUNDO; }
         else if (lado === 2) { sx = Math.random() * LARGURA_MUNDO; sy = ALTURA_MUNDO - 60; }
         else { sx = Math.random() * LARGURA_MUNDO; sy = 60; }
-
         const rapido = Math.random() < 0.6;
         if (!colide(sx, sy, 15)) {
             zumbis.push(rapido ? criarZumbiRapido(sx, sy) : criarZumbiForte(sx, sy));
@@ -963,13 +728,13 @@ function atualizar(dt) {
     }
 
     // IA
-    for (const z of zumbis) {
-        const dxp = jogador.x - z.x;
-        const dyp = jogador.y - z.y;
+    for (let zi = 0; zi < zumbis.length; zi++) {
+        const z = zumbis[zi];
+        const dxp = jogador.x - z.x, dyp = jogador.y - z.y;
         const dist = Math.sqrt(dxp*dxp + dyp*dyp);
 
-        const alcanceVisao = z.tipo === 'rapido' ? 320 : 240;
-        const veJogador = dist < alcanceVisao && temLinhaDeVisao(z.x, z.y, jogador.x, jogador.y);
+        const alcance = z.tipo === 'rapido' ? 320 : 240;
+        const veJogador = dist < alcance && temVisao(z.x, z.y, jogador.x, jogador.y);
 
         if (veJogador) {
             z.ultimoVisto = { x: jogador.x, y: jogador.y };
@@ -979,27 +744,22 @@ function atualizar(dt) {
             if (z.tempoPerdido > z.memoria) z.ultimoVisto = null;
         }
 
-        let alvoX, alvoY;
-        let barricadaAlvo = null;
-
+        let alvoX, alvoY, barricadaAlvo = null;
         if (veJogador || (z.ultimoVisto && z.tempoPerdido < z.memoria)) {
             alvoX = z.ultimoVisto ? z.ultimoVisto.x : jogador.x;
             alvoY = z.ultimoVisto ? z.ultimoVisto.y : jogador.y;
-
             let menorDistBar = 120;
-            for (const b of barricadas) {
+            for (let bi = 0; bi < barricadas.length; bi++) {
+                const b = barricadas[bi];
                 if (b.vida <= 0) continue;
-                const d = Math.hypot(b.x - z.x, b.y - z.y);
+                const d = Math.sqrt((b.x-z.x)**2 + (b.y-z.y)**2);
                 if (d > menorDistBar) continue;
-                const dot = ((b.x - z.x) * dxp + (b.y - z.y) * dyp) / (d * dist || 1);
-                if (dot > 0.5) {
-                    menorDistBar = d;
-                    barricadaAlvo = b;
-                }
+                const dot = ((b.x-z.x)*dxp + (b.y-z.y)*dyp) / (d * dist || 1);
+                if (dot > 0.5) { menorDistBar = d; barricadaAlvo = b; }
             }
             if (barricadaAlvo) { alvoX = barricadaAlvo.x; alvoY = barricadaAlvo.y; }
         } else {
-            if (!z.vagarPonto || Math.hypot(z.vagarPonto.x - z.x, z.vagarPonto.y - z.y) < 20) {
+            if (!z.vagarPonto || Math.sqrt((z.vagarPonto.x-z.x)**2 + (z.vagarPonto.y-z.y)**2) < 20) {
                 z.vagarPonto = {
                     x: Math.max(80, Math.min(LARGURA_MUNDO - 80, z.x + (Math.random() - 0.5) * 500)),
                     y: Math.max(80, Math.min(ALTURA_MUNDO - 80, z.y + (Math.random() - 0.5) * 500))
@@ -1009,20 +769,18 @@ function atualizar(dt) {
             alvoY = z.vagarPonto.y;
         }
 
-        const alvoDx = alvoX - z.x;
-        const alvoDy = alvoY - z.y;
-        const alvoDist = Math.hypot(alvoDx, alvoDy);
-
-        if (alvoDist > 5) {
-            const nx = z.x + (alvoDx/alvoDist) * z.vel * dt;
-            const ny = z.y + (alvoDy/alvoDist) * z.vel * dt;
+        const aDx = alvoX - z.x, aDy = alvoY - z.y;
+        const aDist = Math.sqrt(aDx*aDx + aDy*aDy);
+        if (aDist > 5) {
+            const nx = z.x + (aDx/aDist) * z.vel * dt;
+            const ny = z.y + (aDy/aDist) * z.vel * dt;
             if (!colide(nx, z.y, z.raio)) { z.x = nx; z.passo += dt * 8; }
             if (!colide(z.x, ny, z.raio)) { z.y = ny; z.passo += dt * 8; }
         }
 
         if (barricadaAlvo) {
-            const distBar = Math.hypot(barricadaAlvo.x - z.x, barricadaAlvo.y - z.y);
-            if (distBar < z.raio + barricadaAlvo.raio + 5) {
+            const db = Math.sqrt((barricadaAlvo.x-z.x)**2 + (barricadaAlvo.y-z.y)**2);
+            if (db < z.raio + barricadaAlvo.raio + 5) {
                 if (tempo - (z.ultimoAtaqueBar || 0) > 0.7) {
                     z.ultimoAtaqueBar = tempo;
                     barricadaAlvo.vida -= z.tipo === 'forte' ? 12 : 5;
@@ -1044,119 +802,70 @@ function atualizar(dt) {
         }
     }
 
-    for (let i = barricadas.length - 1; i >= 0; i--) {
+    for (let i = barricadas.length - 1; i >= 0; i--)
         if (barricadas[i].vida <= 0) barricadas.splice(i, 1);
-    }
-    for (let i = zumbis.length - 1; i >= 0; i--) {
+    for (let i = zumbis.length - 1; i >= 0; i--)
         if (zumbis[i].vida <= 0) { zumbis.splice(i, 1); atualizarHUD(); }
-    }
     for (let i = particulas.length - 1; i >= 0; i--) {
         const p = particulas[i];
         p.vida -= dt;
         if (p.tipo === 'sangue') { p.x += p.vx * dt; p.y += p.vy * dt; }
         if (p.vida <= 0) particulas.splice(i, 1);
     }
-
     atualizarHUD();
 }
 
-// ===================================================================
-//  RENDER — TILES
-// ===================================================================
+// ===== RENDER =====
 function desenharTile(px, py, tipo) {
     switch (tipo) {
         case 0:
             ctx.fillStyle = '#4a3828';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-            ctx.fillStyle = '#5a4533';
-            ctx.fillRect(px, py + TAMANHO_TILE - 2, TAMANHO_TILE, 2);
             ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-            ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(px + 20, py);
-            ctx.lineTo(px + 20, py + TAMANHO_TILE);
+            ctx.moveTo(px + 20, py); ctx.lineTo(px + 20, py + TAMANHO_TILE);
             ctx.stroke();
             break;
-
         case 1:
             ctx.fillStyle = '#5a4a3a';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
             ctx.strokeStyle = '#3a2a1a';
             ctx.lineWidth = 2;
             ctx.strokeRect(px + 1, py + 1, TAMANHO_TILE - 2, TAMANHO_TILE - 2);
-            ctx.beginPath();
-            ctx.moveTo(px + 20, py); ctx.lineTo(px + 20, py + 18);
-            ctx.moveTo(px, py + 20); ctx.lineTo(px + 40, py + 20);
-            ctx.moveTo(px + 10, py + 20); ctx.lineTo(px + 10, py + 40);
-            ctx.moveTo(px + 30, py + 20); ctx.lineTo(px + 30, py + 40);
-            ctx.stroke();
-            ctx.fillStyle = 'rgba(255,255,255,0.05)';
-            ctx.fillRect(px, py, TAMANHO_TILE, 4);
             break;
-
         case 2:
             ctx.fillStyle = '#2a2a2e';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-            ctx.fillStyle = 'rgba(60,60,70,0.4)';
-            for (let i = 0; i < 5; i++) {
-                ctx.fillRect(px + (i * 13) % 40, py + (i * 17) % 40, 2, 2);
-            }
             break;
-
         case 3:
             ctx.fillStyle = '#2e4a25';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-            ctx.strokeStyle = '#3d602f';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 4; i++) {
-                const gx = px + ((i * 13) % 40);
-                const gy = py + ((i * 17) % 40);
-                ctx.beginPath();
-                ctx.moveTo(gx, gy + 3);
-                ctx.lineTo(gx + 2, gy);
-                ctx.stroke();
-            }
             break;
-
         case 4:
             ctx.fillStyle = '#5a5a5a';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
             ctx.strokeStyle = '#4a4a4a';
-            ctx.lineWidth = 2;
             ctx.strokeRect(px + 1, py + 1, TAMANHO_TILE - 2, TAMANHO_TILE - 2);
             break;
-
         case 5:
             ctx.fillStyle = '#5a3040';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-            ctx.fillStyle = 'rgba(0,0,0,0.15)';
-            for (let i = 0; i < 6; i++) {
-                ctx.fillRect(px + (i * 7) % 40, py + (i * 11) % 40, 2, 2);
-            }
             break;
-
         case 6:
             ctx.fillStyle = '#7a9aa5';
             ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
             ctx.strokeStyle = '#5a7a85';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(px, py, TAMANHO_TILE/2, TAMANHO_TILE/2);
-            ctx.strokeRect(px + TAMANHO_TILE/2, py, TAMANHO_TILE/2, TAMANHO_TILE/2);
-            ctx.strokeRect(px, py + TAMANHO_TILE/2, TAMANHO_TILE/2, TAMANHO_TILE/2);
-            ctx.strokeRect(px + TAMANHO_TILE/2, py + TAMANHO_TILE/2, TAMANHO_TILE/2, TAMANHO_TILE/2);
+            ctx.strokeRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
             break;
     }
 }
 
-// =============== SPRITES ===============
 function desenharJogador() {
-    const { x, y, direcao } = jogador;
+    const x = jogador.x, y = jogador.y, direcao = jogador.direcao;
     const andando = (teclas['w'] || teclas['a'] || teclas['s'] || teclas['d'] ||
-                     teclas['arrowup'] || teclas['arrowdown'] || teclas['arrowleft'] || teclas['arrowright'] ||
-                     teclas['ArrowUp'] || teclas['ArrowDown'] || teclas['ArrowLeft'] || teclas['ArrowRight']);
+                     teclas['arrowup'] || teclas['arrowdown'] || teclas['arrowleft'] || teclas['arrowright']);
     const balanco = andando ? Math.sin(jogador.passo) * 3 : 0;
 
-    // Sombra
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.beginPath();
     ctx.ellipse(x, y + 12, 14, 6, 0, 0, Math.PI * 2);
@@ -1165,12 +874,10 @@ function desenharJogador() {
     ctx.save();
     ctx.translate(x, y);
 
-    // Pernas
     ctx.fillStyle = '#2a3a6f';
     ctx.fillRect(-7, 12, 5, 5 + balanco);
     ctx.fillRect(2, 12, 5, 5 - balanco);
 
-    // Corpo
     ctx.fillStyle = '#3a5abf';
     ctx.beginPath();
     ctx.roundRect(-9, -4, 18, 16, 3);
@@ -1179,7 +886,6 @@ function desenharJogador() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Braços
     ctx.fillStyle = '#5a7adf';
     ctx.beginPath();
     ctx.arc(-11, 2 + balanco, 4, 0, Math.PI * 2);
@@ -1188,7 +894,6 @@ function desenharJogador() {
     ctx.arc(11, 2 - balanco, 4, 0, Math.PI * 2);
     ctx.fill();
 
-    // Cabeça
     ctx.fillStyle = '#e8b48a';
     ctx.beginPath();
     ctx.arc(0, -8, 8, 0, Math.PI * 2);
@@ -1197,13 +902,11 @@ function desenharJogador() {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Cabelo
     ctx.fillStyle = '#3a2818';
     ctx.beginPath();
     ctx.arc(0, -10, 8, Math.PI, 0);
     ctx.fill();
 
-    // Olhos
     const eyeOffX = Math.cos(direcao) * 2;
     const eyeOffY = Math.sin(direcao) * 1;
     ctx.fillStyle = '#000';
@@ -1212,8 +915,7 @@ function desenharJogador() {
     ctx.arc(3 + eyeOffX, -8 + eyeOffY, 1.5, 0, Math.PI*2);
     ctx.fill();
 
-    // Arma
-    if (inventario.includes('arma')) {
+    if (inventario.indexOf('arma') >= 0) {
         ctx.save();
         ctx.rotate(direcao);
         ctx.fillStyle = '#222';
@@ -1223,7 +925,6 @@ function desenharJogador() {
         ctx.restore();
     }
 
-    // Móvel na cabeça
     if (movelCarregado) {
         const info = TIPOS_ITEM[movelCarregado];
         ctx.fillStyle = info.cor;
@@ -1233,15 +934,13 @@ function desenharJogador() {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 2;
         ctx.stroke();
-        ctx.fillStyle = info.cor2;
-        ctx.fillRect(-10, -26, 20, 4);
     }
 
     ctx.restore();
 }
 
 function desenharZumbi(z) {
-    const { x, y, raio, tipo, cor, corBorda } = z;
+    const x = z.x, y = z.y, raio = z.raio, tipo = z.tipo, cor = z.cor, corBorda = z.corBorda;
     const balanco = Math.sin(z.passo) * 2;
 
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -1249,25 +948,14 @@ function desenharZumbi(z) {
     ctx.ellipse(x, y + raio * 0.9, raio * 1.1, raio * 0.4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    if (z.ultimoVisto && z.tempoPerdido < 0.5) {
-        ctx.strokeStyle = 'rgba(255,50,50,0.4)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(x, y, raio + 8 + Math.sin(tempo*10) * 3, 0, Math.PI * 2);
-        ctx.stroke();
-    }
-
     ctx.save();
     ctx.translate(x, y);
-
     const escala = tipo === 'rapido' ? 0.75 : 1.2;
 
-    // Pernas
     ctx.fillStyle = corBorda;
     ctx.fillRect(-6 * escala, 10 * escala, 4 * escala, 6 * escala);
     ctx.fillRect(2 * escala, 10 * escala, 4 * escala, 6 * escala);
 
-    // Corpo
     ctx.fillStyle = corBorda;
     ctx.beginPath();
     ctx.roundRect(-9 * escala, -2 * escala, 18 * escala, 14 * escala, 4);
@@ -1276,12 +964,6 @@ function desenharZumbi(z) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Rasgos
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.fillRect(-5 * escala, 2 * escala, 3 * escala, 4 * escala);
-    ctx.fillRect(3 * escala, 5 * escala, 3 * escala, 3 * escala);
-
-    // Braços
     ctx.fillStyle = cor;
     ctx.beginPath();
     ctx.ellipse(-11 * escala, -1 * escala + balanco, 4 * escala, 6 * escala, -0.5, 0, Math.PI * 2);
@@ -1294,7 +976,6 @@ function desenharZumbi(z) {
     ctx.fill();
     ctx.stroke();
 
-    // Cabeça
     ctx.fillStyle = cor;
     ctx.beginPath();
     ctx.arc(0, -9 * escala, 8 * escala, 0, Math.PI * 2);
@@ -1303,13 +984,6 @@ function desenharZumbi(z) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Ferida
-    ctx.fillStyle = 'rgba(120,0,0,0.6)';
-    ctx.beginPath();
-    ctx.arc(3 * escala, -10 * escala, 2.5 * escala, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Olhos
     ctx.fillStyle = '#f00';
     ctx.shadowColor = '#f00';
     ctx.shadowBlur = 8;
@@ -1319,16 +993,8 @@ function desenharZumbi(z) {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Boca
-    ctx.strokeStyle = '#400';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(0, -5 * escala, 3 * escala, 0.2, Math.PI - 0.2);
-    ctx.stroke();
-
     ctx.restore();
 
-    // Barra de vida
     const maxVida = tipo === 'rapido' ? 20 : 70;
     if (z.vida < maxVida) {
         const pct = z.vida / maxVida;
@@ -1349,14 +1015,6 @@ function desenharItem(it) {
     ctx.ellipse(it.x, it.y + 12, 14, 5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    const grad = ctx.createRadialGradient(it.x, it.y, 0, it.x, it.y, 25);
-    grad.addColorStop(0, info.cor + '80');
-    grad.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(it.x, it.y, 25, 0, Math.PI * 2);
-    ctx.fill();
-
     ctx.fillStyle = info.cor;
     ctx.beginPath();
     ctx.roundRect(it.x - 14, it.y - 14 + bob, 28, 28, 6);
@@ -1364,9 +1022,6 @@ function desenharItem(it) {
     ctx.strokeStyle = info.cor2;
     ctx.lineWidth = 3;
     ctx.stroke();
-
-    ctx.fillStyle = info.cor2;
-    ctx.fillRect(it.x - 10, it.y - 6 + bob, 20, 3);
 
     ctx.font = '20px Arial';
     ctx.textAlign = 'center';
@@ -1390,10 +1045,7 @@ function desenharBarricada(b) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    ctx.fillStyle = info.cor2;
-    ctx.fillRect(b.x - b.raio, b.y - 3, b.raio * 2, 6);
-
-    ctx.font = `${b.raio + 4}px Arial`;
+    ctx.font = (b.raio + 4) + 'px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(info.emoji, b.x, b.y);
@@ -1404,12 +1056,8 @@ function desenharBarricada(b) {
     ctx.fillRect(b.x - b.raio - 2, b.y - b.raio - 16, barW + 4, 8);
     ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
     ctx.fillRect(b.x - b.raio, b.y - b.raio - 14, barW * pct, 4);
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(b.x - b.raio, b.y - b.raio - 14, barW, 4);
 }
 
-// =============== RENDER PRINCIPAL ===============
 function render() {
     ctx.fillStyle = '#0a0a0c';
     ctx.fillRect(0, 0, LARGURA, ALTURA);
@@ -1422,87 +1070,67 @@ function render() {
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
 
-    // Tiles
     const x0 = Math.max(0, Math.floor(camera.x / TAMANHO_TILE) - 1);
     const y0 = Math.max(0, Math.floor(camera.y / TAMANHO_TILE) - 1);
     const x1 = Math.min(MAPA_LARGURA, Math.ceil((camera.x + LARGURA) / TAMANHO_TILE) + 1);
     const y1 = Math.min(MAPA_ALTURA, Math.ceil((camera.y + ALTURA) / TAMANHO_TILE) + 1);
 
-    for (let y = y0; y < y1; y++) {
-        for (let x = x0; x < x1; x++) {
+    for (let y = y0; y < y1; y++)
+        for (let x = x0; x < x1; x++)
             desenharTile(x * TAMANHO_TILE, y * TAMANHO_TILE, MAPA[y][x]);
-        }
-    }
 
-    // Sangue
-    for (const s of manchasSangue) {
+    for (let i = 0; i < manchasSangue.length; i++) {
+        const s = manchasSangue[i];
         ctx.fillStyle = s.cor;
         ctx.beginPath();
         ctx.ellipse(s.x, s.y, s.raio, s.raio * s.escalaY, s.rot, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // Itens
-    for (const it of itens) desenharItem(it);
+    for (let i = 0; i < itens.length; i++) desenharItem(itens[i]);
+    for (let i = 0; i < barricadas.length; i++) desenharBarricada(barricadas[i]);
+    for (let i = 0; i < zumbis.length; i++) desenharZumbi(zumbis[i]);
 
-    // Barricadas
-    for (const b of barricadas) desenharBarricada(b);
-
-    // Zumbis
-    for (const z of zumbis) desenharZumbi(z);
-
-    // Jogador
     desenharJogador();
 
-    // Preview barricada
     if (movelCarregado) {
         const info = TIPOS_ITEM[movelCarregado];
         const pvx = jogador.x + Math.cos(jogador.direcao) * (jogador.raio + info.tamanho + 4);
         const pvy = jogador.y + Math.sin(jogador.direcao) * (jogador.raio + info.tamanho + 4);
-        const podeColocar = !colide(pvx, pvy, info.tamanho) &&
-            !barricadas.some(b => Math.hypot(b.x - pvx, b.y - pvy) < info.tamanho + b.raio);
+        const pode = !colide(pvx, pvy, info.tamanho);
 
-        ctx.strokeStyle = podeColocar ? 'rgba(0,255,0,0.8)' : 'rgba(255,0,0,0.8)';
+        ctx.strokeStyle = pode ? 'rgba(0,255,0,0.8)' : 'rgba(255,0,0,0.8)';
         ctx.lineWidth = 3;
-        ctx.setLineDash([6, 6]);
         ctx.beginPath();
         ctx.arc(pvx, pvy, info.tamanho, 0, Math.PI*2);
         ctx.stroke();
-        ctx.setLineDash([]);
     }
 
-    // Partículas
-    for (const p of particulas) {
+    for (let i = 0; i < particulas.length; i++) {
+        const p = particulas[i];
         if (p.tipo === 'tiro') {
-            ctx.strokeStyle = `rgba(255, 230, 100, ${p.vida * 12})`;
+            ctx.strokeStyle = 'rgba(255, 230, 100, ' + (p.vida * 12) + ')';
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(p.x1, p.y1);
             ctx.lineTo(p.x2, p.y2);
             ctx.stroke();
-            ctx.fillStyle = `rgba(255, 240, 150, ${p.vida * 10})`;
-            ctx.beginPath();
-            ctx.arc(p.x1, p.y1, 15, 0, Math.PI * 2);
-            ctx.fill();
         } else if (p.tipo === 'sangue') {
-            ctx.fillStyle = `rgba(200, 30, 30, ${p.vida * 1.5})`;
+            ctx.fillStyle = 'rgba(200, 30, 30, ' + (p.vida * 1.5) + ')';
             ctx.beginPath();
             ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 
-    // Linha de mira
-    const mundoMouseX = mouse.x + camera.x;
-    const mundoMouseY = mouse.y + camera.y;
+    const mmX = mouse.x + camera.x;
+    const mmY = mouse.y + camera.y;
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
     ctx.beginPath();
     ctx.moveTo(jogador.x, jogador.y);
-    ctx.lineTo(mundoMouseX, mundoMouseY);
+    ctx.lineTo(mmX, mmY);
     ctx.stroke();
-    ctx.setLineDash([]);
 
     ctx.restore();
 
@@ -1521,39 +1149,14 @@ function render() {
     ctx.lineTo(mouse.x, mouse.y + 16);
     ctx.stroke();
 
-    // Vinheta
-    const vinheta = ctx.createRadialGradient(LARGURA/2, ALTURA/2, ALTURA * 0.4, LARGURA/2, ALTURA/2, ALTURA * 0.85);
-    vinheta.addColorStop(0, 'rgba(0,0,0,0)');
-    vinheta.addColorStop(1, 'rgba(0,0,0,0.55)');
-    ctx.fillStyle = vinheta;
-    ctx.fillRect(0, 0, LARGURA, ALTURA);
-
-    // Aviso vida baixa
-    if (jogador.vida < 30 && rodando) {
-        const intens = (30 - jogador.vida) / 30;
-        const gradVermelho = ctx.createRadialGradient(LARGURA/2, ALTURA/2, ALTURA * 0.3, LARGURA/2, ALTURA/2, ALTURA * 0.9);
-        gradVermelho.addColorStop(0, 'rgba(0,0,0,0)');
-        gradVermelho.addColorStop(1, `rgba(200,0,0,${intens * 0.6})`);
-        ctx.fillStyle = gradVermelho;
-        ctx.fillRect(0, 0, LARGURA, ALTURA);
-    }
-
     if (movelCarregado) {
         ctx.fillStyle = 'rgba(255, 200, 0, 0.9)';
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('🚧 Aperte E para colocar a barricada | Q para devolver', LARGURA/2, ALTURA - 15);
+        ctx.fillText('🚧 E para colocar a barricada | Q para devolver', LARGURA/2, ALTURA - 15);
     }
-
-    ctx.fillStyle = 'rgba(200,200,200,0.6)';
-    ctx.font = '11px Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText('🖱️ Botão DIREITO = empurrar item | ⇧ Shift = correr', 10, ALTURA - 10);
 }
 
-// ===================================================================
-//  GAME OVER
-// ===================================================================
 function gameOver() {
     rodando = false;
     document.getElementById('tempoFinal').textContent = Math.floor(tempo);
@@ -1561,27 +1164,23 @@ function gameOver() {
     document.getElementById('gameOver').classList.remove('escondido');
 }
 
-// ===================================================================
-//  LOOP
-// ===================================================================
 function loop(timestamp) {
     if (!ultimoFrame) ultimoFrame = timestamp;
     const dt = Math.min(0.05, (timestamp - ultimoFrame) / 1000);
     ultimoFrame = timestamp;
-
     if (rodando) atualizar(dt);
     render();
-
     requestAnimationFrame(loop);
 }
 
-// ===================================================================
-//  START
-// ===================================================================
+// ===== START =====
 iniciar();
 
-// Focar canvas automaticamente ao mover o mouse
-canvas.addEventListener('mouseenter', () => canvas.focus());
+} catch(e) {
+    document.getElementById('erro').style.display = 'block';
+    document.getElementById('erro').textContent = '⚠️ ERRO: ' + e.message + '\n' + e.stack;
+    console.error(e);
+}
 </script>
 </body>
 </html>
