@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>🧟 Zumbi House — V4 Completo</title>
+<style>
+/* ============================================================
+   RESET + VARIÁVEIS
+============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --cor-fundo: #111;
+    --cor-jogador: #3a7adf;
+    --cor-zumbi-rapido: #7cff5a;
+    --cor-zumbi-forte: #3a8a3a;
+    --cor-hud: #222;
+    --cor-borda: #444;
+    --cor-aviso: #ffcc00;
+}
+
+html, body {
+    height: 100%;
+    background: var(--cor-fundo);
+    color: #eee;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ============================================================
+   HUD SUPERIOR
+============================================================ */
+#hud {
+    display: flex;
+    gap: 25px;
+    background: var(--cor-hud);
+    padding: 10px 25px;
+    border: 2px solid var(--cor-borda);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 17px;
+    z-index: 100;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#hud span { color: #4af; font-weight: bold; }
+
+/* ============================================================
+   CANVAS
+============================================================ */
+canvas {
+    background: #333;
+    border: 3px solid #555;
+    border-radius: 8px;
+    display: block;
+    cursor: crosshair;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+/* ============================================================
+   INVENTÁRIO
+============================================================ */
+#inventario {
+    margin-top: 10px;
+    background: var(--cor-hud);
+    padding: 10px 20px;
+    border: 2px solid var(--cor-borda);
+    border-radius: 8px;
+    min-width: 960px;
+    font-size: 14px;
+}
+
+#itens {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.item-slot {
+    background: #333;
+    border: 2px solid #555;
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-width: 140px;
+    text-align: center;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.item-slot.vazio { opacity: 0.3; }
+
+.item-slot.selecionado {
+    border-color: #4CAF50;
+    background: #2a4a2a;
+    box-shadow: 0 0 10px #4CAF50;
+}
+
+/* ============================================================
+   AVISO INFERIOR
+============================================================ */
+#aviso {
+    margin-top: 8px;
+    color: var(--cor-aviso);
+    font-size: 13px;
+    text-align: center;
+    height: 18px;
+}
+
+/* ============================================================
+   GAME OVER
+============================================================ */
+#gameOver {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.96);
+    padding: 40px 60px;
+    border: 4px solid #c00;
+    border-radius: 12px;
+    text-align: center;
+    z-index: 1000;
+    animation: aparecerGO 0.5s ease-out;
+    box-shadow: 0 0 60px #c00;
+}
+
+@keyframes aparecerGO {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+#gameOver h1 {
+    color: #c00;
+    font-size: 52px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px #c00;
+    animation: pulsarGO 1.5s infinite;
+}
+
+@keyframes pulsarGO {
+    0%, 100% { text-shadow: 0 0 20px #c00; }
+    50%      { text-shadow: 0 0 40px #f00, 0 0 60px #f00; }
+}
+
+#gameOver p { font-size: 20px; margin-bottom: 10px; }
+
+#gameOver button {
+    margin-top: 25px;
+    padding: 14px 35px;
+    background: #c00;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+#gameOver button:hover {
+    background: #e00;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #e00;
+}
+
+.escondido { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ===================== HUD ===================== -->
+<div id="hud">
+    <div>❤️ Vida: <span id="vida">100</span></div>
+    <div>🔫 Munição: <span id="municao">0</span></div>
+    <div>🕐 Tempo: <span id="tempo">0</span>s</div>
+    <div>🧟 Zumbis: <span id="zumbis">0</span></div>
+    <div>🪵 Barricadas: <span id="barricadas">0</span></div>
+</div>
+
+<canvas id="canvas" width="960" height="640"></canvas>
+
+<div id="inventario">
+    <strong>🎒 Inventário (1-5 pra usar)</strong>
+    <div id="itens"></div>
+</div>
+
+<div id="aviso">🎯 Mouse mira | Clique atira | WASD anda | E coloca barricada | Q devolve item</div>
+
+<div id="gameOver" class="escondido">
+    <h1>💀 VOCÊ MORREU 💀</h1>
+    <p>Você sobreviveu <span id="tempoFinal">0</span> segundos</p>
+    <p>Zumbis mortos: <span id="zumbisMortos">0</span></p>
+    <button onclick="location.reload()">🔁 Tentar Novamente</button>
+</div>
+
+<script>
+// ===================================================================
+//  ZUMBI HOUSE V4 — TUDO EM UM ARQUIVO
+//  - Sons procedurais (Web Audio API)
+//  - Mira com mouse
+//  - 2 tipos de zumbi (rápido e forte)
+//  - Barricadas colocáveis em qualquer lugar
+//  - Sangue permanente no chão
+// ===================================================================
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const LARGURA = canvas.width;
+const ALTURA = canvas.height;
+
+const TAMANHO_TILE = 40;
+const MAPA_LARGURA = 60;
+const MAPA_ALTURA = 40;
+const LARGURA_MUNDO = MAPA_LARGURA * TAMANHO_TILE;
+const ALTURA_MUNDO = MAPA_ALTURA * TAMANHO_TILE;
+
+let zumbisMortosContador = 0;
+
+// =============== ÁUDIO ===============
+let audioCtx = null;
+function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function tocarTiro() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(220, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.15);
+    g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.2);
+}
+
+function tocarDano() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(140, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.25);
+    g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.3);
+}
+
+function tocarCura() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(440, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+    g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.4);
+}
+
+function tocarColeta() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(600, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(900, audioCtx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.15);
+}
+
+function tocarZumbiMorto() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(180, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.4);
+    g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.5);
+}
+
+function tocarGemido() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+    lfo.frequency.value = 6;
+    lfoGain.gain.value = 15;
+    lfo.connect(lfoGain).connect(o.frequency);
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(120 + Math.random()*40, audioCtx.currentTime);
+    g.gain.setValueAtTime(0.0, audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0.10, audioCtx.currentTime + 0.2);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+    o.connect(g).connect(audioCtx.destination);
+    lfo.start();
+    o.start();
+    o.stop(audioCtx.currentTime + 1.1);
+    lfo.stop(audioCtx.currentTime + 1.1);
+}
+
+function tocarArrombando() {
+    if (!audioCtx) return;
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            if (!audioCtx) return;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'square';
+            o.frequency.setValueAtTime(90 + Math.random()*40, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            o.connect(g).connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + 0.12);
+        }, i * 90);
+    }
+}
+
+function tocarBarricadaQuebrada() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(60, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.6);
+    g.gain.setValueAtTime(0.35, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.75);
+}
+
+// =============== MAPA ===============
+function criarMapa() {
+    const m = [];
+    for (let y = 0; y < MAPA_ALTURA; y++) {
+        const linha = [];
+        for (let x = 0; x < MAPA_LARGURA; x++) {
+            if (x === 0 || y === 0 || x === MAPA_LARGURA-1 || y === MAPA_ALTURA-1) {
+                linha.push(1);
+            } else linha.push(0);
+        }
+        m.push(linha);
+    }
+
+    for (let x = 3; x < 40; x++) { m[3][x] = 1; m[20][x] = 1; }
+    for (let y = 3; y < 21; y++) { m[y][3] = 1; m[y][39] = 1; }
+
+    m[20][20] = 0; m[20][21] = 0;
+
+    for (let y = 4; y < 20; y++) {
+        if (y !== 10 && y !== 11) m[y][21] = 1;
+    }
+    for (let x = 4; x < 39; x++) {
+        if (x !== 12 && x !== 13 && x !== 30 && x !== 31) m[12][x] = 1;
+    }
+
+    for (let y = 13; y < 20; y++) m[y][30] = 1;
+    for (let x = 30; x < 39; x++) m[16][x] = 1;
+    m[16][33] = 0;
+
+    for (let x = 3; x < 57; x++) m[25][x] = 0;
+
+    m[28][8] = 1; m[28][9] = 1;
+    m[28][25] = 1; m[28][26] = 1;
+    m[28][45] = 1; m[28][46] = 1;
+
+    for (let y = 21; y < 25; y++) {
+        m[y][8] = 1; m[y][55] = 1;
+    }
+
+    return m;
+}
+
+let MAPA = criarMapa();
+
+// =============== BARRICADAS + SANGUE ===============
+let barricadas = [];
+let manchasSangue = [];
+const MAX_MANCHAS = 600;
+
+function adicionarSangue(x, y, escala) {
+    if (manchasSangue.length >= MAX_MANCHAS) manchasSangue.shift();
+    const num = 3 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < num; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const dist = Math.random() * (escala * 1.2);
+        manchasSangue.push({
+            x: x + Math.cos(ang) * dist,
+            y: y + Math.sin(ang) * dist,
+            raio: 3 + Math.random() * escala * 0.7,
+            cor: `rgba(${120 + Math.random()*60|0}, ${10 + Math.random()*20|0}, ${10 + Math.random()*20|0}, ${0.5 + Math.random()*0.4})`
+        });
+    }
+}
+
+// =============== COLISÃO ===============
+function colide(x, y, raio) {
+    const x1 = Math.floor((x - raio) / TAMANHO_TILE);
+    const y1 = Math.floor((y - raio) / TAMANHO_TILE);
+    const x2 = Math.floor((x + raio) / TAMANHO_TILE);
+    const y2 = Math.floor((y + raio) / TAMANHO_TILE);
+
+    for (let ty = y1; ty <= y2; ty++) {
+        for (let tx = x1; tx <= x2; tx++) {
+            if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return true;
+            if (MAPA[ty][tx] === 1) return true;
+        }
+    }
+
+    for (const b of barricadas) {
+        const dx = x - b.x;
+        const dy = y - b.y;
+        if (Math.sqrt(dx*dx + dy*dy) < raio + b.raio) return true;
+    }
+    return false;
+}
+
+// =============== ESTADO ===============
+let jogador, zumbis, itens, movelCarregado, particulas;
+let tempo = 0;
+let rodando = true;
+let inventario = [];
+let itemSelecionado = 0;
+let spawnTimer = 0;
+let ultimoFrame = 0;
+let gemidoTimer = 0;
+let mouse = { x: LARGURA/2, y: ALTURA/2 };
+let segurandoE = false;
+let camera = { x: 0, y: 0 };
+
+// =============== TIPOS DE ITENS ===============
+const TIPOS_ITEM = {
+    'arma':       { emoji: '🔫', nome: 'Pistola',   cor: '#888' },
+    'municao':    { emoji: '📦', nome: 'Munição',   cor: '#a85' },
+    'medkit':     { emoji: '💊', nome: 'Medkit',    cor: '#e33' },
+    'caixa':      { emoji: '📦', nome: 'Caixa',     cor: '#a86', movel: true, tamanho: 16, vida: 80 },
+    'caixagrande':{ emoji: '🗃️', nome: 'Caixa G.',  cor: '#c96', movel: true, tamanho: 22, vida: 150 },
+    'geladeira':  { emoji: '🧊', nome: 'Geladeira', cor: '#6cf', movel: true, tamanho: 20, vida: 200 },
+    'sofa':       { emoji: '🛋️', nome: 'Sofá',      cor: '#864', movel: true, tamanho: 20, vida: 120 },
+    'estante':    { emoji: '📚', nome: 'Estante',   cor: '#654', movel: true, tamanho: 18, vida: 110 },
+    'barril':     { emoji: '🛢️', nome: 'Barril',    cor: '#a44', movel: true, tamanho: 18, vida: 130 },
+    'mesa':       { emoji: '🪑', nome: 'Mesa',      cor: '#975', movel: true, tamanho: 18, vida: 100 },
+};
+
+// =============== CRIAR ENTIDADES ===============
+function criarJogador() {
+    return {
+        x: 700, y: 550, raio: 12, vel: 180,
+        vida: 100, municao: 0, direcao: 0
+    };
+}
+
+function criarZumbiRapido(x, y) {
+    return {
+        x, y, raio: 10,
+        vel: 130 + Math.random() * 30,
+        vida: 20, dano: 6, ultimoDano: 0,
+        tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a'
+    };
+}
+
+function criarZumbiForte(x, y) {
+    return {
+        x, y, raio: 18,
+        vel: 45 + Math.random() * 15,
+        vida: 70, dano: 15, ultimoDano: 0,
+        tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a'
+    };
+}
+
+function criarItem(x, y, tipo) {
+    return { x, y, tipo, raio: 10 };
+}
+
+// =============== INPUT ===============
+const teclas = {};
+window.addEventListener('keydown', e => {
+    initAudio();
+    teclas[e.key.toLowerCase()] = true;
+
+    if (e.key >= '1' && e.key <= '5') usarItem(parseInt(e.key) - 1);
+    if (e.key === ' ') { e.preventDefault(); atirar(); }
+    if (e.key.toLowerCase() === 'e') segurandoE = true;
+    if (e.key.toLowerCase() === 'q' && movelCarregado) {
+        adicionarItem(movelCarregado);
+        movelCarregado = null;
+        atualizarInventario();
+    }
+});
+window.addEventListener('keyup', e => {
+    teclas[e.key.toLowerCase()] = false;
+    if (e.key.toLowerCase() === 'e') segurandoE = false;
+});
+
+canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+});
+
+canvas.addEventListener('mousedown', e => {
+    if (e.button === 0) { initAudio(); atirar(); }
+});
+
+// =============== INVENTÁRIO ===============
+function adicionarItem(tipo) {
+    if (inventario.length >= 5) {
+        inventario[itemSelecionado] = tipo;
+    } else {
+        inventario.push(tipo);
+    }
+    atualizarInventario();
+    tocarColeta();
+}
+
+function usarItem(idx) {
+    if (idx >= inventario.length) return;
+    const tipo = inventario[idx];
+    if (!tipo) return;
+
+    itemSelecionado = idx;
+    const info = TIPOS_ITEM[tipo];
+
+    if (tipo === 'medkit') {
+        if (jogador.vida >= 100) return;
+        jogador.vida = Math.min(100, jogador.vida + 40);
+        inventario.splice(idx, 1);
+        itemSelecionado = 0;
+        tocarCura();
+    } else if (tipo === 'municao') {
+        jogador.municao += 8;
+        inventario.splice(idx, 1);
+        itemSelecionado = 0;
+        tocarColeta();
+    } else if (info.movel) {
+        if (movelCarregado) return;
+        movelCarregado = tipo;
+        inventario.splice(idx, 1);
+        itemSelecionado = 0;
+        tocarColeta();
+    }
+
+    atualizarInventario();
+    atualizarHUD();
+}
+
+function atualizarInventario() {
+    const div = document.getElementById('itens');
+    div.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'item-slot';
+        if (i === itemSelecionado) slot.classList.add('selecionado');
+        const tipo = inventario[i];
+        if (tipo) {
+            const info = TIPOS_ITEM[tipo];
+            slot.innerHTML = `${i+1}. ${info.emoji} ${info.nome}`;
+        } else {
+            slot.classList.add('vazio');
+            slot.innerHTML = `${i+1}. vazio`;
+        }
+        div.appendChild(slot);
+    }
+}
+
+function atualizarHUD() {
+    document.getElementById('vida').textContent = Math.max(0, Math.round(jogador.vida));
+    document.getElementById('municao').textContent = jogador.municao;
+    document.getElementById('tempo').textContent = Math.floor(tempo);
+    document.getElementById('zumbis').textContent = zumbis.length;
+    document.getElementById('barricadas').textContent = barricadas.filter(b => b.vida > 0).length;
+}
+
+// =============== ATIRAR ===============
+function atirar() {
+    initAudio();
+    if (jogador.municao <= 0) return;
+    if (!inventario.includes('arma')) return;
+
+    jogador.municao--;
+    tocarTiro();
+
+    const dirX = Math.cos(jogador.direcao);
+    const dirY = Math.sin(jogador.direcao);
+
+    let alvo = null;
+    let menorDist = 500;
+
+    for (const z of zumbis) {
+        const dx = z.x - jogador.x;
+        const dy = z.y - jogador.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist > menorDist) continue;
+        const dot = (dx * dirX + dy * dirY) / dist;
+        if (dot > 0.95) {
+            menorDist = dist;
+            alvo = z;
+        }
+    }
+
+    particulas.push({
+        tipo: 'tiro',
+        x1: jogador.x, y1: jogador.y,
+        x2: jogador.x + dirX * 500,
+        y2: jogador.y + dirY * 500,
+        vida: 0.08
+    });
+
+    if (alvo) {
+        alvo.vida -= 20;
+        for (let i = 0; i < 8; i++) {
+            particulas.push({
+                tipo: 'sangue',
+                x: alvo.x, y: alvo.y,
+                vx: (Math.random()-0.5)*200,
+                vy: (Math.random()-0.5)*200,
+                vida: 0.6
+            });
+        }
+        if (alvo.vida <= 0) {
+            tocarZumbiMorto();
+            adicionarSangue(alvo.x, alvo.y, alvo.raio * 0.9);
+            zumbisMortosContador++;
+        }
+    }
+    atualizarHUD();
+}
+
+// =============== INICIAR ===============
+function iniciar() {
+    jogador = criarJogador();
+    zumbis = [];
+    itens = [];
+    barricadas = [];
+    manchasSangue = [];
+    movelCarregado = null;
+    particulas = [];
+    inventario = [];
+    tempo = 0;
+    rodando = true;
+    itemSelecionado = 0;
+    spawnTimer = 0;
+    gemidoTimer = 0;
+    zumbisMortosContador = 0;
+
+    for (let i = 0; i < 6; i++) {
+        const tipo = Math.random() < 0.6 ? 'rapido' : 'forte';
+        const x = 100 + Math.random() * 700;
+        const y = 1000 + Math.random() * 200;
+        zumbis.push(tipo === 'rapido' ? criarZumbiRapido(x, y) : criarZumbiForte(x, y));
+    }
+
+    const posicoesItens = [
+        [200, 200, 'arma'],
+        [350, 300, 'municao'],
+        [500, 200, 'municao'],
+        [300, 450, 'medkit'],
+        [700, 200, 'geladeira'],
+        [800, 400, 'sofa'],
+        [150, 600, 'caixa'],
+        [900, 600, 'caixagrande'],
+        [600, 450, 'municao'],
+        [450, 700, 'medkit'],
+        [1000, 300, 'estante'],
+        [750, 700, 'barril'],
+        [1100, 200, 'geladeira'],
+        [1200, 500, 'medkit'],
+        [1300, 300, 'municao'],
+        [1400, 700, 'arma'],
+        [500, 800, 'mesa'],
+        [200, 1000, 'caixa'],
+        [400, 1000, 'caixagrande'],
+        [900, 1000, 'sofa'],
+        [1100, 1000, 'estante'],
+        [1500, 300, 'barril'],
+        [1500, 600, 'caixa'],
+        [1600, 200, 'geladeira'],
+        [1700, 500, 'sofa'],
+        [1800, 300, 'municao'],
+        [1900, 700, 'medkit'],
+        [2000, 400, 'estante'],
+        [2100, 200, 'caixagrande'],
+        [700, 900, 'barril'],
+    ];
+
+    for (const [x, y, tipo] of posicoesItens) {
+        if (!colide(x, y, 15)) itens.push(criarItem(x, y, tipo));
+    }
+
+    atualizarHUD();
+    atualizarInventario();
+    requestAnimationFrame(loop);
+}
+
+// =============== COLOCAR BARRICADA ===============
+function tentarColocarBarricada() {
+    if (!movelCarregado) return;
+    const info = TIPOS_ITEM[movelCarregado];
+
+    const px = jogador.x + Math.cos(jogador.direcao) * (jogador.raio + info.tamanho + 4);
+    const py = jogador.y + Math.sin(jogador.direcao) * (jogador.raio + info.tamanho + 4);
+
+    if (colide(px, py, info.tamanho)) return;
+    for (const b of barricadas) {
+        if (Math.hypot(b.x - px, b.y - py) < info.tamanho + b.raio) return;
+    }
+
+    barricadas.push({
+        x: px, y: py, tipo: movelCarregado,
+        raio: info.tamanho, vida: info.vida, vidaMax: info.vida
+    });
+
+    movelCarregado = null;
+    tocarColeta();
+    atualizarInventario();
+    atualizarHUD();
+}
+
+// =============== UPDATE ===============
+function atualizar(dt) {
+    if (!rodando) return;
+
+    tempo += dt;
+    spawnTimer += dt;
+    gemidoTimer += dt;
+
+    if (gemidoTimer > 1.5 && zumbis.length > 0) {
+        gemidoTimer = 0;
+        tocarGemido();
+    }
+
+    const mundoMouseX = mouse.x + camera.x;
+    const mundoMouseY = mouse.y + camera.y;
+    jogador.direcao = Math.atan2(mundoMouseY - jogador.y, mundoMouseX - jogador.x);
+
+    let dx = 0, dy = 0;
+    if (teclas['w'] || teclas['arrowup']) dy -= 1;
+    if (teclas['s'] || teclas['arrowdown']) dy += 1;
+    if (teclas['a'] || teclas['arrowleft']) dx -= 1;
+    if (teclas['d'] || teclas['arrowright']) dx += 1;
+
+    if (dx !== 0 || dy !== 0) {
+        const len = Math.sqrt(dx*dx + dy*dy);
+        dx /= len; dy /= len;
+        const nx = jogador.x + dx * jogador.vel * dt;
+        const ny = jogador.y + dy * jogador.vel * dt;
+        if (!colide(nx, jogador.y, jogador.raio)) jogador.x = nx;
+        if (!colide(jogador.x, ny, jogador.raio)) jogador.y = ny;
+    }
+
+    if (segurandoE && movelCarregado) {
+        if (!jogador.ultimaColocacao || tempo - jogador.ultimaColocacao > 0.3) {
+            tentarColocarBarricada();
+            jogador.ultimaColocacao = tempo;
+        }
+    }
+
+    for (let i = itens.length - 1; i >= 0; i--) {
+        const it = itens[i];
+        const d = Math.hypot(it.x - jogador.x, it.y - jogador.y);
+        if (d < jogador.raio + it.raio + 8) {
+            adicionarItem(it.tipo);
+            itens.splice(i, 1);
+        }
+    }
+
+    if (spawnTimer > Math.max(1.5, 5 - tempo/30) && zumbis.length < 30) {
+        spawnTimer = 0;
+        let sx, sy;
+        const lado = Math.floor(Math.random() * 4);
+        if (lado === 0) { sx = 60; sy = Math.random() * ALTURA_MUNDO; }
+        else if (lado === 1) { sx = LARGURA_MUNDO - 60; sy = Math.random() * ALTURA_MUNDO; }
+        else if (lado === 2) { sx = Math.random() * LARGURA_MUNDO; sy = ALTURA_MUNDO - 60; }
+        else { sx = Math.random() * LARGURA_MUNDO; sy = 60; }
+
+        const rapido = Math.random() < 0.6;
+        if (!colide(sx, sy, 15)) {
+            zumbis.push(rapido ? criarZumbiRapido(sx, sy) : criarZumbiForte(sx, sy));
+        }
+    }
+
+    for (const z of zumbis) {
+        const ddx = jogador.x - z.x;
+        const ddy = jogador.y - z.y;
+        const dist = Math.sqrt(ddx*ddx + ddy*ddy);
+
+        let alvoX = jogador.x;
+        let alvoY = jogador.y;
+        let barricadaAlvo = null;
+        let menorDistBar = 200;
+
+        for (const b of barricadas) {
+            if (b.vida <= 0) continue;
+            const distZumbiBar = Math.hypot(b.x - z.x, b.y - z.y);
+            if (distZumbiBar > menorDistBar) continue;
+            const dotProd = ((b.x - z.x) * ddx + (b.y - z.y) * ddy) / (distZumbiBar * dist || 1);
+            if (dotProd > 0.3) {
+                menorDistBar = distZumbiBar;
+                barricadaAlvo = b;
+            }
+        }
+
+        if (barricadaAlvo) {
+            alvoX = barricadaAlvo.x;
+            alvoY = barricadaAlvo.y;
+        }
+
+        const alvoDx = alvoX - z.x;
+        const alvoDy = alvoY - z.y;
+        const alvoDist = Math.hypot(alvoDx, alvoDy);
+
+        if (alvoDist > 5) {
+            const nx = z.x + (alvoDx/alvoDist) * z.vel * dt;
+            const ny = z.y + (alvoDy/alvoDist) * z.vel * dt;
+            if (!colide(nx, z.y, z.raio)) z.x = nx;
+            if (!colide(z.x, ny, z.raio)) z.y = ny;
+        }
+
+        if (barricadaAlvo) {
+            const distBar = Math.hypot(barricadaAlvo.x - z.x, barricadaAlvo.y - z.y);
+            if (distBar < z.raio + barricadaAlvo.raio + 5) {
+                if (tempo - (z.ultimoAtaqueBar || 0) > 0.7) {
+                    z.ultimoAtaqueBar = tempo;
+                    barricadaAlvo.vida -= z.tipo === 'forte' ? 12 : 5;
+                    tocarArrombando();
+                    if (barricadaAlvo.vida <= 0) {
+                        tocarBarricadaQuebrada();
+                        itens.push(criarItem(barricadaAlvo.x, barricadaAlvo.y, barricadaAlvo.tipo));
+                    }
+                }
+            }
+        }
+
+        if (dist < z.raio + jogador.raio + 4 && tempo - z.ultimoDano > 0.8) {
+            jogador.vida -= z.dano;
+            z.ultimoDano = tempo;
+            tocarDano();
+            atualizarHUD();
+            if (jogador.vida <= 0) gameOver();
+        }
+    }
+
+    for (let i = barricadas.length - 1; i >= 0; i--) {
+        if (barricadas[i].vida <= 0) barricadas.splice(i, 1);
+    }
+
+    for (let i = zumbis.length - 1; i >= 0; i--) {
+        if (zumbis[i].vida <= 0) {
+            zumbis.splice(i, 1);
+            atualizarHUD();
+        }
+    }
+
+    for (let i = particulas.length - 1; i >= 0; i--) {
+        const p = particulas[i];
+        p.vida -= dt;
+        if (p.tipo === 'sangue') { p.x += p.vx * dt; p.y += p.vy * dt; }
+        if (p.vida <= 0) particulas.splice(i, 1);
+    }
+
+    atualizarHUD();
+}
+
+// =============== RENDER ===============
+function render() {
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, 0, LARGURA, ALTURA);
+
+    const targetX = Math.max(0, Math.min(LARGURA_MUNDO - LARGURA, jogador.x - LARGURA/2));
+    const targetY = Math.max(0, Math.min(ALTURA_MUNDO - ALTURA, jogador.y - ALTURA/2));
+    camera.x += (targetX - camera.x) * 0.15;
+    camera.y += (targetY - camera.y) * 0.15;
+
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
+
+    const x0 = Math.max(0, Math.floor(camera.x / TAMANHO_TILE) - 1);
+    const y0 = Math.max(0, Math.floor(camera.y / TAMANHO_TILE) - 1);
+    const x1 = Math.min(MAPA_LARGURA, Math.ceil((camera.x + LARGURA) / TAMANHO_TILE) + 1);
+    const y1 = Math.min(MAPA_ALTURA, Math.ceil((camera.y + ALTURA) / TAMANHO_TILE) + 1);
+
+    for (let y = y0; y < y1; y++) {
+        for (let x = x0; x < x1; x++) {
+            const px = x * TAMANHO_TILE;
+            const py = y * TAMANHO_TILE;
+            if (MAPA[y][x] === 1) {
+                ctx.fillStyle = '#4a3a2a';
+                ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+                ctx.strokeStyle = '#2a1a0a';
+                ctx.strokeRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            } else {
+                ctx.fillStyle = y < 21 ? '#3a2f25' : '#2a2a2a';
+                ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+                ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                ctx.strokeRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            }
+        }
+    }
+
+    for (const s of manchasSangue) {
+        ctx.fillStyle = s.cor;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.raio, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    for (const it of itens) {
+        const info = TIPOS_ITEM[it.tipo];
+        ctx.fillStyle = info.cor;
+        ctx.beginPath();
+        ctx.arc(it.x, it.y, it.raio + 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(info.emoji, it.x, it.y + 1);
+    }
+
+    for (const b of barricadas) {
+        const info = TIPOS_ITEM[b.tipo];
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.beginPath();
+        ctx.ellipse(b.x, b.y + b.raio*0.7, b.raio*1.1, b.raio*0.4, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle = info.cor;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.raio, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = `${b.raio + 6}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(info.emoji, b.x, b.y);
+
+        const pct = b.vida / b.vidaMax;
+        const barW = b.raio * 2;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(b.x - b.raio - 1, b.y - b.raio - 13, barW + 2, 6);
+        ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
+        ctx.fillRect(b.x - b.raio, b.y - b.raio - 12, barW * pct, 4);
+    }
+
+    for (const z of zumbis) {
+        ctx.fillStyle = z.cor;
+        ctx.beginPath();
+        ctx.arc(z.x, z.y, z.raio, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = z.corBorda;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = '#f00';
+        const olhoOff = z.raio * 0.35;
+        ctx.beginPath();
+        ctx.arc(z.x - olhoOff, z.y - z.raio*0.2, z.raio*0.15, 0, Math.PI*2);
+        ctx.arc(z.x + olhoOff, z.y - z.raio*0.2, z.raio*0.15, 0, Math.PI*2);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = '#3a7adf';
+    ctx.beginPath();
+    ctx.arc(jogador.x, jogador.y, jogador.raio, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#1a3a8f';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    const mundoMouseX = mouse.x + camera.x;
+    const mundoMouseY = mouse.y + camera.y;
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(jogador.x, jogador.y);
+    ctx.lineTo(mundoMouseX, mundoMouseY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = 'rgba(255,80,80,0.9)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(mundoMouseX, mundoMouseY, 8, 0, Math.PI * 2);
+    ctx.moveTo(mundoMouseX - 12, mundoMouseY);
+    ctx.lineTo(mundoMouseX + 12, mundoMouseY);
+    ctx.moveTo(mundoMouseX, mundoMouseY - 12);
+    ctx.lineTo(mundoMouseX, mundoMouseY + 12);
+    ctx.stroke();
+
+    for (const p of particulas) {
+        if (p.tipo === 'tiro') {
+            ctx.strokeStyle = `rgba(255, 230, 100, ${p.vida * 12})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(p.x1, p.y1);
+            ctx.lineTo(p.x2, p.y2);
+            ctx.stroke();
+        } else if (p.tipo === 'sangue') {
+            ctx.fillStyle = `rgba(200, 30, 30, ${p.vida * 1.5})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    if (movelCarregado) {
+        const info = TIPOS_ITEM[movelCarregado];
+        ctx.globalAlpha = 0.85;
+
+        const pvx = jogador.x + Math.cos(jogador.direcao) * (jogador.raio + info.tamanho + 4);
+        const pvy = jogador.y + Math.sin(jogador.direcao) * (jogador.raio + info.tamanho + 4);
+        const podeColocar = !colide(pvx, pvy, info.tamanho) &&
+            !barricadas.some(b => Math.hypot(b.x - pvx, b.y - pvy) < info.tamanho + b.raio);
+
+        ctx.strokeStyle = podeColocar ? 'rgba(0,255,0,0.8)' : 'rgba(255,0,0,0.8)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        ctx.arc(pvx, pvy, info.tamanho, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = info.cor;
+        ctx.beginPath();
+        ctx.arc(jogador.x, jogador.y - 28, 14, 0, Math.PI*2);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(info.emoji, jogador.x, jogador.y - 28);
+    }
+
+    ctx.restore();
+
+    if (movelCarregado) {
+        ctx.fillStyle = 'rgba(255, 200, 0, 0.9)';
+        ctx.font = 'bold 18px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🚧 Aperte E para colocar a barricada | Q para devolver', LARGURA/2, ALTURA - 15);
+    }
+}
+
+// =============== GAME OVER ===============
+function gameOver() {
+    rodando = false;
+    document.getElementById('tempoFinal').textContent = Math.floor(tempo);
+    document.getElementById('zumbisMortos').textContent = zumbisMortosContador;
+    document.getElementById('gameOver').classList.remove('escondido');
+}
+
+// =============== LOOP ===============
+function loop(timestamp) {
+    const dt = Math.min(0.05, (timestamp - ultimoFrame) / 1000 || 0);
+    ultimoFrame = timestamp;
+    if (rodando) atualizar(dt);
+    render();
+    requestAnimationFrame(loop);
+}
+
+iniciar();
+</script>
+</body>
+</html>
