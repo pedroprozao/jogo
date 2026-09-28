@@ -2,20 +2,14 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>🧟 Zumbi House — V4 Completo</title>
+<title>🧟 Zumbi House V5</title>
 <style>
-/* ============================================================
-   RESET + VARIÁVEIS
-============================================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    --cor-fundo: #111;
-    --cor-jogador: #3a7adf;
-    --cor-zumbi-rapido: #7cff5a;
-    --cor-zumbi-forte: #3a8a3a;
-    --cor-hud: #222;
-    --cor-borda: #444;
+    --cor-fundo: #0a0a0c;
+    --cor-hud: #1a1a1e;
+    --cor-borda: #3a3a44;
     --cor-aviso: #ffcc00;
 }
 
@@ -27,69 +21,63 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    padding: 8px;
     overflow: hidden;
     user-select: none;
 }
 
-/* ============================================================
-   HUD SUPERIOR
-============================================================ */
 #hud {
     display: flex;
-    gap: 25px;
+    gap: 20px;
     background: var(--cor-hud);
-    padding: 10px 25px;
+    padding: 8px 22px;
     border: 2px solid var(--cor-borda);
     border-radius: 8px;
-    margin-bottom: 10px;
-    font-size: 17px;
-    z-index: 100;
+    margin-bottom: 8px;
+    font-size: 16px;
     flex-wrap: wrap;
     justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
 
 #hud span { color: #4af; font-weight: bold; }
+#hud .vida-baixa { color: #f44; animation: piscar 0.5s infinite; }
+@keyframes piscar { 50% { opacity: 0.4; } }
 
-/* ============================================================
-   CANVAS
-============================================================ */
 canvas {
-    background: #333;
-    border: 3px solid #555;
+    background: #1a1a1e;
+    border: 3px solid var(--cor-borda);
     border-radius: 8px;
     display: block;
-    cursor: crosshair;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    cursor: none;
+    box-shadow: 0 0 40px rgba(0,0,0,0.9), inset 0 0 100px rgba(0,0,0,0.5);
 }
 
-/* ============================================================
-   INVENTÁRIO
-============================================================ */
 #inventario {
-    margin-top: 10px;
+    margin-top: 8px;
     background: var(--cor-hud);
-    padding: 10px 20px;
+    padding: 8px 20px;
     border: 2px solid var(--cor-borda);
     border-radius: 8px;
     min-width: 960px;
-    font-size: 14px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
 
 #itens {
     display: flex;
-    gap: 15px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 6px;
 }
 
 .item-slot {
-    background: #333;
-    border: 2px solid #555;
+    background: #2a2a33;
+    border: 2px solid #444;
     border-radius: 6px;
-    padding: 8px 12px;
-    min-width: 140px;
+    padding: 6px 10px;
+    min-width: 130px;
     text-align: center;
-    font-size: 13px;
+    font-size: 12px;
     transition: all 0.2s;
 }
 
@@ -98,36 +86,29 @@ canvas {
 .item-slot.selecionado {
     border-color: #4CAF50;
     background: #2a4a2a;
-    box-shadow: 0 0 10px #4CAF50;
+    box-shadow: 0 0 12px #4CAF50;
 }
 
-/* ============================================================
-   AVISO INFERIOR
-============================================================ */
 #aviso {
-    margin-top: 8px;
+    margin-top: 6px;
     color: var(--cor-aviso);
-    font-size: 13px;
+    font-size: 12px;
     text-align: center;
-    height: 18px;
+    height: 16px;
 }
 
-/* ============================================================
-   GAME OVER
-============================================================ */
 #gameOver {
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.96);
+    background: rgba(0,0,0,0.97);
     padding: 40px 60px;
     border: 4px solid #c00;
     border-radius: 12px;
     text-align: center;
     z-index: 1000;
     animation: aparecerGO 0.5s ease-out;
-    box-shadow: 0 0 60px #c00;
+    box-shadow: 0 0 80px #c00, inset 0 0 40px rgba(200,0,0,0.2);
 }
 
 @keyframes aparecerGO {
@@ -139,19 +120,19 @@ canvas {
     color: #c00;
     font-size: 52px;
     margin-bottom: 20px;
-    text-shadow: 0 0 20px #c00;
+    text-shadow: 0 0 25px #c00;
     animation: pulsarGO 1.5s infinite;
 }
 
 @keyframes pulsarGO {
-    0%, 100% { text-shadow: 0 0 20px #c00; }
-    50%      { text-shadow: 0 0 40px #f00, 0 0 60px #f00; }
+    0%, 100% { text-shadow: 0 0 25px #c00; }
+    50%      { text-shadow: 0 0 50px #f00, 0 0 80px #f00; }
 }
 
-#gameOver p { font-size: 20px; margin-bottom: 10px; }
+#gameOver p { font-size: 19px; margin-bottom: 8px; }
 
 #gameOver button {
-    margin-top: 25px;
+    margin-top: 22px;
     padding: 14px 35px;
     background: #c00;
     color: white;
@@ -167,7 +148,7 @@ canvas {
 #gameOver button:hover {
     background: #e00;
     transform: scale(1.05);
-    box-shadow: 0 0 20px #e00;
+    box-shadow: 0 0 25px #e00;
 }
 
 .escondido { display: none !important; }
@@ -175,7 +156,6 @@ canvas {
 </head>
 <body>
 
-<!-- ===================== HUD ===================== -->
 <div id="hud">
     <div>❤️ Vida: <span id="vida">100</span></div>
     <div>🔫 Munição: <span id="municao">0</span></div>
@@ -191,7 +171,7 @@ canvas {
     <div id="itens"></div>
 </div>
 
-<div id="aviso">🎯 Mouse mira | Clique atira | WASD anda | E coloca barricada | Q devolve item</div>
+<div id="aviso">🎯 Mouse mira | Clique esq atira | Botão dir empurra/segura | WASD anda | E coloca barricada | Q devolve</div>
 
 <div id="gameOver" class="escondido">
     <h1>💀 VOCÊ MORREU 💀</h1>
@@ -202,12 +182,7 @@ canvas {
 
 <script>
 // ===================================================================
-//  ZUMBI HOUSE V4 — TUDO EM UM ARQUIVO
-//  - Sons procedurais (Web Audio API)
-//  - Mira com mouse
-//  - 2 tipos de zumbi (rápido e forte)
-//  - Barricadas colocáveis em qualquer lugar
-//  - Sangue permanente no chão
+//  ZUMBI HOUSE V5 — Sprites, mapa melhorado e IA de caça
 // ===================================================================
 
 const canvas = document.getElementById('canvas');
@@ -229,11 +204,9 @@ function initAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
 }
-
 function tocarTiro() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = 'square';
     o.frequency.setValueAtTime(220, audioCtx.currentTime);
     o.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.15);
@@ -242,11 +215,9 @@ function tocarTiro() {
     o.connect(g).connect(audioCtx.destination);
     o.start(); o.stop(audioCtx.currentTime + 0.2);
 }
-
 function tocarDano() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = 'sawtooth';
     o.frequency.setValueAtTime(140, audioCtx.currentTime);
     o.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.25);
@@ -255,11 +226,9 @@ function tocarDano() {
     o.connect(g).connect(audioCtx.destination);
     o.start(); o.stop(audioCtx.currentTime + 0.3);
 }
-
 function tocarCura() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = 'sine';
     o.frequency.setValueAtTime(440, audioCtx.currentTime);
     o.frequency.linearRampToValueAtTime(880, audioCtx.currentTime + 0.3);
@@ -268,11 +237,9 @@ function tocarCura() {
     o.connect(g).connect(audioCtx.destination);
     o.start(); o.stop(audioCtx.currentTime + 0.4);
 }
-
 function tocarColeta() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = 'triangle';
     o.frequency.setValueAtTime(600, audioCtx.currentTime);
     o.frequency.linearRampToValueAtTime(900, audioCtx.currentTime + 0.1);
@@ -281,11 +248,9 @@ function tocarColeta() {
     o.connect(g).connect(audioCtx.destination);
     o.start(); o.stop(audioCtx.currentTime + 0.15);
 }
-
 function tocarZumbiMorto() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = 'sawtooth';
     o.frequency.setValueAtTime(180, audioCtx.currentTime);
     o.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.4);
@@ -294,35 +259,29 @@ function tocarZumbiMorto() {
     o.connect(g).connect(audioCtx.destination);
     o.start(); o.stop(audioCtx.currentTime + 0.5);
 }
-
 function tocarGemido() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    const lfo = audioCtx.createOscillator();
-    const lfoGain = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    const lfo = audioCtx.createOscillator(), lfoGain = audioCtx.createGain();
     lfo.frequency.value = 6;
     lfoGain.gain.value = 15;
     lfo.connect(lfoGain).connect(o.frequency);
     o.type = 'sawtooth';
     o.frequency.setValueAtTime(120 + Math.random()*40, audioCtx.currentTime);
-    g.gain.setValueAtTime(0.0, audioCtx.currentTime);
-    g.gain.linearRampToValueAtTime(0.10, audioCtx.currentTime + 0.2);
+    g.gain.setValueAtTime(0, audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.2);
     g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
     o.connect(g).connect(audioCtx.destination);
-    lfo.start();
-    o.start();
+    lfo.start(); o.start();
     o.stop(audioCtx.currentTime + 1.1);
     lfo.stop(audioCtx.currentTime + 1.1);
 }
-
 function tocarArrombando() {
     if (!audioCtx) return;
     for (let i = 0; i < 3; i++) {
         setTimeout(() => {
             if (!audioCtx) return;
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = 'square';
             o.frequency.setValueAtTime(90 + Math.random()*40, audioCtx.currentTime);
             g.gain.setValueAtTime(0.25, audioCtx.currentTime);
@@ -332,11 +291,9 @@ function tocarArrombando() {
         }, i * 90);
     }
 }
-
 function tocarBarricadaQuebrada() {
     if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = 'square';
     o.frequency.setValueAtTime(60, audioCtx.currentTime);
     o.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.6);
@@ -345,8 +302,21 @@ function tocarBarricadaQuebrada() {
     o.connect(g).connect(audioCtx.destination);
     o.start(); o.stop(audioCtx.currentTime + 0.75);
 }
+function tocarSussurro() {
+    // som sutil quando zumbi te perde
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(80, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.5);
+    g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.55);
+}
 
-// =============== MAPA ===============
+// =============== MAPA MELHORADO ===============
+// 0 = chão interno, 1 = parede, 2 = chão externo (rua), 3 = grama, 4 = calçada, 5 = carpete, 6 = azulejo
 function criarMapa() {
     const m = [];
     for (let y = 0; y < MAPA_ALTURA; y++) {
@@ -354,36 +324,77 @@ function criarMapa() {
         for (let x = 0; x < MAPA_LARGURA; x++) {
             if (x === 0 || y === 0 || x === MAPA_LARGURA-1 || y === MAPA_ALTURA-1) {
                 linha.push(1);
-            } else linha.push(0);
+            } else linha.push(3); // grama por padrão fora
         }
         m.push(linha);
     }
 
+    // Grama/quintal em volta
+    for (let y = 1; y < MAPA_ALTURA-1; y++) {
+        for (let x = 1; x < MAPA_LARGURA-1; x++) {
+            if (y < 22) m[y][x] = 3;
+            else if (y < 26) m[y][x] = 4; // calçada
+            else m[y][x] = 2; // asfalto
+        }
+    }
+
+    // Área da casa (chão interno de madeira)
+    for (let y = 4; y < 20; y++) {
+        for (let x = 4; x < 39; x++) {
+            m[y][x] = 0;
+        }
+    }
+    // Banheiro (canto) com azulejo
+    for (let y = 17; y < 20; y++) {
+        for (let x = 31; x < 39; x++) {
+            m[y][x] = 6;
+        }
+    }
+    // Quarto com carpete
+    for (let y = 4; y < 12; y++) {
+        for (let x = 4; x < 21; x++) {
+            m[y][x] = 5;
+        }
+    }
+
+    // Paredes externas da casa
     for (let x = 3; x < 40; x++) { m[3][x] = 1; m[20][x] = 1; }
     for (let y = 3; y < 21; y++) { m[y][3] = 1; m[y][39] = 1; }
 
+    // Porta principal (2 tiles)
     m[20][20] = 0; m[20][21] = 0;
 
+    // Parede vertical central (com vão 10-11)
     for (let y = 4; y < 20; y++) {
         if (y !== 10 && y !== 11) m[y][21] = 1;
     }
+
+    // Parede horizontal (com vãos 12-13 e 30-31)
     for (let x = 4; x < 39; x++) {
         if (x !== 12 && x !== 13 && x !== 30 && x !== 31) m[12][x] = 1;
     }
 
+    // Quarto canto (parede vertical + porta)
     for (let y = 13; y < 20; y++) m[y][30] = 1;
     for (let x = 30; x < 39; x++) m[16][x] = 1;
     m[16][33] = 0;
+    // Banheiro interno (parede)
+    for (let y = 17; y < 20; y++) m[y][31] = 1;
+    m[17][35] = 0;
 
-    for (let x = 3; x < 57; x++) m[25][x] = 0;
+    // Muros laterais do quintal
+    for (let y = 21; y < 25; y++) {
+        m[y][8] = 1; m[y][55] = 1;
+    }
 
+    // Árvores/pedras decorativas na rua
     m[28][8] = 1; m[28][9] = 1;
     m[28][25] = 1; m[28][26] = 1;
     m[28][45] = 1; m[28][46] = 1;
 
-    for (let y = 21; y < 25; y++) {
-        m[y][8] = 1; m[y][55] = 1;
-    }
+    // Carros/pedras decorativas na parte de baixo
+    m[33][12] = 1; m[33][13] = 1; m[33][14] = 1;
+    m[33][40] = 1; m[33][41] = 1; m[33][42] = 1;
 
     return m;
 }
@@ -393,19 +404,21 @@ let MAPA = criarMapa();
 // =============== BARRICADAS + SANGUE ===============
 let barricadas = [];
 let manchasSangue = [];
-const MAX_MANCHAS = 600;
+const MAX_MANCHAS = 800;
 
 function adicionarSangue(x, y, escala) {
     if (manchasSangue.length >= MAX_MANCHAS) manchasSangue.shift();
-    const num = 3 + Math.floor(Math.random() * 4);
+    const num = 4 + Math.floor(Math.random() * 4);
     for (let i = 0; i < num; i++) {
         const ang = Math.random() * Math.PI * 2;
-        const dist = Math.random() * (escala * 1.2);
+        const dist = Math.random() * (escala * 1.3);
         manchasSangue.push({
             x: x + Math.cos(ang) * dist,
             y: y + Math.sin(ang) * dist,
-            raio: 3 + Math.random() * escala * 0.7,
-            cor: `rgba(${120 + Math.random()*60|0}, ${10 + Math.random()*20|0}, ${10 + Math.random()*20|0}, ${0.5 + Math.random()*0.4})`
+            raio: 3 + Math.random() * escala * 0.8,
+            cor: `rgba(${120 + Math.random()*60|0}, ${10 + Math.random()*20|0}, ${10 + Math.random()*20|0}, ${0.5 + Math.random()*0.4})`,
+            rot: Math.random() * Math.PI * 2,
+            escalaY: 0.6 + Math.random() * 0.8
         });
     }
 }
@@ -423,10 +436,8 @@ function colide(x, y, raio) {
             if (MAPA[ty][tx] === 1) return true;
         }
     }
-
     for (const b of barricadas) {
-        const dx = x - b.x;
-        const dy = y - b.y;
+        const dx = x - b.x, dy = y - b.y;
         if (Math.sqrt(dx*dx + dy*dy) < raio + b.raio) return true;
     }
     return false;
@@ -443,50 +454,70 @@ let ultimoFrame = 0;
 let gemidoTimer = 0;
 let mouse = { x: LARGURA/2, y: ALTURA/2 };
 let segurandoE = false;
+let botaoDireitoPressionado = false;
 let camera = { x: 0, y: 0 };
 
 // =============== TIPOS DE ITENS ===============
 const TIPOS_ITEM = {
-    'arma':       { emoji: '🔫', nome: 'Pistola',   cor: '#888' },
-    'municao':    { emoji: '📦', nome: 'Munição',   cor: '#a85' },
-    'medkit':     { emoji: '💊', nome: 'Medkit',    cor: '#e33' },
-    'caixa':      { emoji: '📦', nome: 'Caixa',     cor: '#a86', movel: true, tamanho: 16, vida: 80 },
-    'caixagrande':{ emoji: '🗃️', nome: 'Caixa G.',  cor: '#c96', movel: true, tamanho: 22, vida: 150 },
-    'geladeira':  { emoji: '🧊', nome: 'Geladeira', cor: '#6cf', movel: true, tamanho: 20, vida: 200 },
-    'sofa':       { emoji: '🛋️', nome: 'Sofá',      cor: '#864', movel: true, tamanho: 20, vida: 120 },
-    'estante':    { emoji: '📚', nome: 'Estante',   cor: '#654', movel: true, tamanho: 18, vida: 110 },
-    'barril':     { emoji: '🛢️', nome: 'Barril',    cor: '#a44', movel: true, tamanho: 18, vida: 130 },
-    'mesa':       { emoji: '🪑', nome: 'Mesa',      cor: '#975', movel: true, tamanho: 18, vida: 100 },
+    'arma':       { emoji: '🔫', nome: 'Pistola',   cor: '#888', cor2: '#555' },
+    'municao':    { emoji: '📦', nome: 'Munição',   cor: '#a85', cor2: '#753' },
+    'medkit':     { emoji: '💊', nome: 'Medkit',    cor: '#e33', cor2: '#911' },
+    'caixa':      { emoji: '📦', nome: 'Caixa',     cor: '#a86', cor2: '#753', movel: true, tamanho: 16, vida: 80 },
+    'caixagrande':{ emoji: '🗃️', nome: 'Caixa G.',  cor: '#c96', cor2: '#864', movel: true, tamanho: 22, vida: 150 },
+    'geladeira':  { emoji: '🧊', nome: 'Geladeira', cor: '#6cf', cor2: '#48a', movel: true, tamanho: 20, vida: 200 },
+    'sofa':       { emoji: '🛋️', nome: 'Sofá',      cor: '#864', cor2: '#542', movel: true, tamanho: 20, vida: 120 },
+    'estante':    { emoji: '📚', nome: 'Estante',   cor: '#654', cor2: '#432', movel: true, tamanho: 18, vida: 110 },
+    'barril':     { emoji: '🛢️', nome: 'Barril',    cor: '#a44', cor2: '#722', movel: true, tamanho: 18, vida: 130 },
+    'mesa':       { emoji: '🪑', nome: 'Mesa',      cor: '#975', cor2: '#643', movel: true, tamanho: 18, vida: 100 },
 };
 
-// =============== CRIAR ENTIDADES ===============
+// =============== ENTIDADES ===============
 function criarJogador() {
     return {
         x: 700, y: 550, raio: 12, vel: 180,
-        vida: 100, municao: 0, direcao: 0
+        vida: 100, municao: 0, direcao: 0,
+        passo: 0 // ciclo de animação de andar
     };
 }
 
 function criarZumbiRapido(x, y) {
     return {
-        x, y, raio: 10,
-        vel: 130 + Math.random() * 30,
+        x, y, raio: 10, vel: 130 + Math.random() * 30,
         vida: 20, dano: 6, ultimoDano: 0,
-        tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a'
+        tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a',
+        passo: 0, ultimoVisto: null, tempoPerdido: 0, memoria: 3
     };
 }
 
 function criarZumbiForte(x, y) {
     return {
-        x, y, raio: 18,
-        vel: 45 + Math.random() * 15,
+        x, y, raio: 18, vel: 45 + Math.random() * 15,
         vida: 70, dano: 15, ultimoDano: 0,
-        tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a'
+        tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a',
+        passo: 0, ultimoVisto: null, tempoPerdido: 0, memoria: 5
     };
 }
 
 function criarItem(x, y, tipo) {
-    return { x, y, tipo, raio: 10 };
+    return { x, y, tipo, raio: 10, bob: Math.random() * Math.PI * 2 };
+}
+
+// =============== VISÃO DOS ZUMBIS ===============
+function temLinhaDeVisao(x1, y1, x2, y2) {
+    // Amostra pontos entre os dois; se bater em parede, retorna false
+    const dx = x2 - x1, dy = y2 - y1;
+    const dist = Math.hypot(dx, dy);
+    const steps = Math.ceil(dist / 15);
+    for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const px = x1 + dx * t;
+        const py = y1 + dy * t;
+        const tx = Math.floor(px / TAMANHO_TILE);
+        const ty = Math.floor(py / TAMANHO_TILE);
+        if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return false;
+        if (MAPA[ty][tx] === 1) return false;
+    }
+    return true;
 }
 
 // =============== INPUT ===============
@@ -515,17 +546,25 @@ canvas.addEventListener('mousemove', e => {
     mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
 });
 
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
 canvas.addEventListener('mousedown', e => {
-    if (e.button === 0) { initAudio(); atirar(); }
+    initAudio();
+    if (e.button === 0) atirar();
+    if (e.button === 2) {
+        botaoDireitoPressionado = true;
+        tentarEmpurrarItem();
+    }
+});
+
+canvas.addEventListener('mouseup', e => {
+    if (e.button === 2) botaoDireitoPressionado = false;
 });
 
 // =============== INVENTÁRIO ===============
 function adicionarItem(tipo) {
-    if (inventario.length >= 5) {
-        inventario[itemSelecionado] = tipo;
-    } else {
-        inventario.push(tipo);
-    }
+    if (inventario.length >= 5) inventario[itemSelecionado] = tipo;
+    else inventario.push(tipo);
     atualizarInventario();
     tocarColeta();
 }
@@ -534,7 +573,6 @@ function usarItem(idx) {
     if (idx >= inventario.length) return;
     const tipo = inventario[idx];
     if (!tipo) return;
-
     itemSelecionado = idx;
     const info = TIPOS_ITEM[tipo];
 
@@ -556,7 +594,6 @@ function usarItem(idx) {
         itemSelecionado = 0;
         tocarColeta();
     }
-
     atualizarInventario();
     atualizarHUD();
 }
@@ -581,7 +618,11 @@ function atualizarInventario() {
 }
 
 function atualizarHUD() {
-    document.getElementById('vida').textContent = Math.max(0, Math.round(jogador.vida));
+    const vidaEl = document.getElementById('vida');
+    vidaEl.textContent = Math.max(0, Math.round(jogador.vida));
+    if (jogador.vida < 30) vidaEl.classList.add('vida-baixa');
+    else vidaEl.classList.remove('vida-baixa');
+
     document.getElementById('municao').textContent = jogador.municao;
     document.getElementById('tempo').textContent = Math.floor(tempo);
     document.getElementById('zumbis').textContent = zumbis.length;
@@ -600,38 +641,26 @@ function atirar() {
     const dirX = Math.cos(jogador.direcao);
     const dirY = Math.sin(jogador.direcao);
 
-    let alvo = null;
-    let menorDist = 500;
-
+    let alvo = null, menorDist = 500;
     for (const z of zumbis) {
-        const dx = z.x - jogador.x;
-        const dy = z.y - jogador.y;
+        const dx = z.x - jogador.x, dy = z.y - jogador.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist > menorDist) continue;
         const dot = (dx * dirX + dy * dirY) / dist;
-        if (dot > 0.95) {
-            menorDist = dist;
-            alvo = z;
-        }
+        if (dot > 0.95) { menorDist = dist; alvo = z; }
     }
 
     particulas.push({
-        tipo: 'tiro',
-        x1: jogador.x, y1: jogador.y,
-        x2: jogador.x + dirX * 500,
-        y2: jogador.y + dirY * 500,
-        vida: 0.08
+        tipo: 'tiro', x1: jogador.x, y1: jogador.y,
+        x2: jogador.x + dirX * 500, y2: jogador.y + dirY * 500, vida: 0.08
     });
 
     if (alvo) {
         alvo.vida -= 20;
         for (let i = 0; i < 8; i++) {
             particulas.push({
-                tipo: 'sangue',
-                x: alvo.x, y: alvo.y,
-                vx: (Math.random()-0.5)*200,
-                vy: (Math.random()-0.5)*200,
-                vida: 0.6
+                tipo: 'sangue', x: alvo.x, y: alvo.y,
+                vx: (Math.random()-0.5)*200, vy: (Math.random()-0.5)*200, vida: 0.6
             });
         }
         if (alvo.vida <= 0) {
@@ -641,6 +670,50 @@ function atirar() {
         }
     }
     atualizarHUD();
+}
+
+// =============== EMPURRAR ITEM (botão direito) ===============
+function tentarEmpurrarItem() {
+    if (movelCarregado) return;
+    // Acha item móvel próximo do cursor
+    const mundoMouseX = mouse.x + camera.x;
+    const mundoMouseY = mouse.y + camera.y;
+
+    let maisProximo = null, menorDist = 60;
+    let idxMaisProximo = -1;
+
+    for (let i = 0; i < itens.length; i++) {
+        const it = itens[i];
+        const info = TIPOS_ITEM[it.tipo];
+        if (!info.movel) continue;
+        const d = Math.hypot(it.x - mundoMouseX, it.y - mundoMouseY);
+        if (d < menorDist) {
+            menorDist = d;
+            maisProximo = it;
+            idxMaisProximo = i;
+        }
+    }
+
+    if (maisProximo) {
+        // Empurra o item na direção do cursor
+        const dx = maisProximo.x - jogador.x;
+        const dy = maisProximo.y - jogador.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > jogador.raio + maisProximo.raio + 30) return;
+
+        const info = TIPOS_ITEM[maisProximo.tipo];
+        const dirX = Math.cos(jogador.direcao);
+        const dirY = Math.sin(jogador.direcao);
+
+        const nx = maisProximo.x + dirX * 40;
+        const ny = maisProximo.y + dirY * 40;
+
+        if (!colide(nx, ny, info.tamanho)) {
+            maisProximo.x = nx;
+            maisProximo.y = ny;
+            tocarColeta();
+        }
+    }
 }
 
 // =============== INICIAR ===============
@@ -763,6 +836,7 @@ function atualizar(dt) {
         const ny = jogador.y + dy * jogador.vel * dt;
         if (!colide(nx, jogador.y, jogador.raio)) jogador.x = nx;
         if (!colide(jogador.x, ny, jogador.raio)) jogador.y = ny;
+        jogador.passo += dt * 10;
     }
 
     if (segurandoE && movelCarregado) {
@@ -772,8 +846,14 @@ function atualizar(dt) {
         }
     }
 
+    // Empurrar com botão direito contínuo
+    if (botaoDireitoPressionado && !movelCarregado) {
+        tentarEmpurrarItem();
+    }
+
     for (let i = itens.length - 1; i >= 0; i--) {
         const it = itens[i];
+        it.bob += dt * 3;
         const d = Math.hypot(it.x - jogador.x, it.y - jogador.y);
         if (d < jogador.raio + it.raio + 8) {
             adicionarItem(it.tipo);
@@ -796,30 +876,56 @@ function atualizar(dt) {
         }
     }
 
+    // ========= IA DOS ZUMBIS — CAÇA =========
     for (const z of zumbis) {
-        const ddx = jogador.x - z.x;
-        const ddy = jogador.y - z.y;
-        const dist = Math.sqrt(ddx*ddx + ddy*ddy);
+        const dxp = jogador.x - z.x;
+        const dyp = jogador.y - z.y;
+        const dist = Math.sqrt(dxp*dxp + dyp*dyp);
 
-        let alvoX = jogador.x;
-        let alvoY = jogador.y;
-        let barricadaAlvo = null;
-        let menorDistBar = 200;
+        // Visão: alcance depende do tipo
+        const alcanceVisao = z.tipo === 'rapido' ? 320 : 240;
+        const veJogador = dist < alcanceVisao && temLinhaDeVisao(z.x, z.y, jogador.x, jogador.y);
 
-        for (const b of barricadas) {
-            if (b.vida <= 0) continue;
-            const distZumbiBar = Math.hypot(b.x - z.x, b.y - z.y);
-            if (distZumbiBar > menorDistBar) continue;
-            const dotProd = ((b.x - z.x) * ddx + (b.y - z.y) * ddy) / (distZumbiBar * dist || 1);
-            if (dotProd > 0.3) {
-                menorDistBar = distZumbiBar;
-                barricadaAlvo = b;
-            }
+        if (veJogador) {
+            z.ultimoVisto = { x: jogador.x, y: jogador.y };
+            z.tempoPerdido = 0;
+        } else {
+            z.tempoPerdido += dt;
+            if (z.tempoPerdido > z.memoria) z.ultimoVisto = null;
         }
 
-        if (barricadaAlvo) {
-            alvoX = barricadaAlvo.x;
-            alvoY = barricadaAlvo.y;
+        // Define alvo
+        let alvoX, alvoY;
+        let barricadaAlvo = null;
+
+        if (veJogador || (z.ultimoVisto && z.tempoPerdido < z.memoria)) {
+            // Caça o jogador (posição atual ou última vista)
+            alvoX = z.ultimoVisto ? z.ultimoVisto.x : jogador.x;
+            alvoY = z.ultimoVisto ? z.ultimoVisto.y : jogador.y;
+
+            // Verifica barricada no caminho
+            let menorDistBar = 120;
+            for (const b of barricadas) {
+                if (b.vida <= 0) continue;
+                const distZumbiBar = Math.hypot(b.x - z.x, b.y - z.y);
+                if (distZumbiBar > menorDistBar) continue;
+                const dotProd = ((b.x - z.x) * dxp + (b.y - z.y) * dyp) / (distZumbiBar * dist || 1);
+                if (dotProd > 0.5) {
+                    menorDistBar = distZumbiBar;
+                    barricadaAlvo = b;
+                }
+            }
+            if (barricadaAlvo) { alvoX = barricadaAlvo.x; alvoY = barricadaAlvo.y; }
+        } else {
+            // Perdeu o jogador: vagueia pra um ponto aleatório próximo
+            if (!z.vagarPonto || Math.hypot(z.vagarPonto.x - z.x, z.vagarPonto.y - z.y) < 20) {
+                z.vagarPonto = {
+                    x: Math.max(80, Math.min(LARGURA_MUNDO - 80, z.x + (Math.random() - 0.5) * 400)),
+                    y: Math.max(80, Math.min(ALTURA_MUNDO - 80, z.y + (Math.random() - 0.5) * 400))
+                };
+            }
+            alvoX = z.vagarPonto.x;
+            alvoY = z.vagarPonto.y;
         }
 
         const alvoDx = alvoX - z.x;
@@ -829,10 +935,11 @@ function atualizar(dt) {
         if (alvoDist > 5) {
             const nx = z.x + (alvoDx/alvoDist) * z.vel * dt;
             const ny = z.y + (alvoDy/alvoDist) * z.vel * dt;
-            if (!colide(nx, z.y, z.raio)) z.x = nx;
-            if (!colide(z.x, ny, z.raio)) z.y = ny;
+            if (!colide(nx, z.y, z.raio)) { z.x = nx; z.passo += dt * 8; }
+            if (!colide(z.x, ny, z.raio)) { z.y = ny; z.passo += dt * 8; }
         }
 
+        // Ataque em barricada
         if (barricadaAlvo) {
             const distBar = Math.hypot(barricadaAlvo.x - z.x, barricadaAlvo.y - z.y);
             if (distBar < z.raio + barricadaAlvo.raio + 5) {
@@ -848,6 +955,7 @@ function atualizar(dt) {
             }
         }
 
+        // Ataque no jogador
         if (dist < z.raio + jogador.raio + 4 && tempo - z.ultimoDano > 0.8) {
             jogador.vida -= z.dano;
             z.ultimoDano = tempo;
@@ -860,14 +968,9 @@ function atualizar(dt) {
     for (let i = barricadas.length - 1; i >= 0; i--) {
         if (barricadas[i].vida <= 0) barricadas.splice(i, 1);
     }
-
     for (let i = zumbis.length - 1; i >= 0; i--) {
-        if (zumbis[i].vida <= 0) {
-            zumbis.splice(i, 1);
-            atualizarHUD();
-        }
+        if (zumbis[i].vida <= 0) { zumbis.splice(i, 1); atualizarHUD(); }
     }
-
     for (let i = particulas.length - 1; i >= 0; i--) {
         const p = particulas[i];
         p.vida -= dt;
@@ -878,9 +981,398 @@ function atualizar(dt) {
     atualizarHUD();
 }
 
-// =============== RENDER ===============
+// ===================================================================
+//  RENDER — SPRITES DESENHADOS
+// ===================================================================
+
+// Função auxiliar para desenhar tile com textura
+function desenharTile(px, py, tipo) {
+    switch (tipo) {
+        case 0: // madeira interna
+            ctx.fillStyle = '#4a3828';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            ctx.fillStyle = '#3d2e20';
+            ctx.fillRect(px, py, TAMANHO_TILE, 2);
+            ctx.fillStyle = '#5a4533';
+            ctx.fillRect(px, py + TAMANHO_TILE - 2, TAMANHO_TILE, 2);
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(px + 20, py);
+            ctx.lineTo(px + 20, py + TAMANHO_TILE);
+            ctx.stroke();
+            break;
+
+        case 1: // parede
+            ctx.fillStyle = '#5a4a3a';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            // Tijolos
+            ctx.strokeStyle = '#3a2a1a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(px + 1, py + 1, TAMANHO_TILE - 2, TAMANHO_TILE - 2);
+            ctx.beginPath();
+            ctx.moveTo(px + 20, py);
+            ctx.lineTo(px + 20, py + 18);
+            ctx.moveTo(px, py + 20);
+            ctx.lineTo(px + 40, py + 20);
+            ctx.moveTo(px + 10, py + 20);
+            ctx.lineTo(px + 10, py + 40);
+            ctx.moveTo(px + 30, py + 20);
+            ctx.lineTo(px + 30, py + 40);
+            ctx.stroke();
+            // Highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            ctx.fillRect(px, py, TAMANHO_TILE, 4);
+            break;
+
+        case 2: // asfalto
+            ctx.fillStyle = '#2a2a2e';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            // Faíscas de pedra
+            ctx.fillStyle = 'rgba(60,60,70,0.4)';
+            for (let i = 0; i < 5; i++) {
+                const rx = px + (i * 137) % TAMANHO_TILE;
+                const ry = py + (i * 89) % TAMANHO_TILE;
+                ctx.fillRect(rx, ry, 2, 2);
+            }
+            break;
+
+        case 3: // grama
+            ctx.fillStyle = '#2e4a25';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            // Tufos
+            ctx.strokeStyle = '#3d602f';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 4; i++) {
+                const gx = px + ((i * 133) % TAMANHO_TILE);
+                const gy = py + ((i * 71) % TAMANHO_TILE);
+                ctx.beginPath();
+                ctx.moveTo(gx, gy + 3);
+                ctx.lineTo(gx + 2, gy);
+                ctx.moveTo(gx + 3, gy + 3);
+                ctx.lineTo(gx + 3, gy + 1);
+                ctx.stroke();
+            }
+            break;
+
+        case 4: // calçada
+            ctx.fillStyle = '#5a5a5a';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            ctx.strokeStyle = '#4a4a4a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(px + 1, py + 1, TAMANHO_TILE - 2, TAMANHO_TILE - 2);
+            ctx.beginPath();
+            ctx.moveTo(px + 20, py);
+            ctx.lineTo(px + 20, py + 40);
+            ctx.stroke();
+            break;
+
+        case 5: // carpete
+            ctx.fillStyle = '#5a3040';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            ctx.fillStyle = 'rgba(0,0,0,0.15)';
+            for (let i = 0; i < 8; i++) {
+                ctx.fillRect(px + (i * 17) % TAMANHO_TILE, py + (i * 29) % TAMANHO_TILE, 2, 2);
+            }
+            break;
+
+        case 6: // azulejo
+            ctx.fillStyle = '#7a9aa5';
+            ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+            ctx.strokeStyle = '#5a7a85';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(px, py, TAMANHO_TILE/2, TAMANHO_TILE/2);
+            ctx.strokeRect(px + TAMANHO_TILE/2, py, TAMANHO_TILE/2, TAMANHO_TILE/2);
+            ctx.strokeRect(px, py + TAMANHO_TILE/2, TAMANHO_TILE/2, TAMANHO_TILE/2);
+            ctx.strokeRect(px + TAMANHO_TILE/2, py + TAMANHO_TILE/2, TAMANHO_TILE/2, TAMANHO_TILE/2);
+            break;
+    }
+}
+
+// =============== SPRITE DO JOGADOR ===============
+function desenharJogador() {
+    const { x, y, direcao } = jogador;
+    const andando = (teclas['w'] || teclas['a'] || teclas['s'] || teclas['d'] ||
+                     teclas['arrowup'] || teclas['arrowdown'] || teclas['arrowleft'] || teclas['arrowright']);
+    const balanco = andando ? Math.sin(jogador.passo) * 3 : 0;
+
+    // Sombra
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 12, 14, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(x, y);
+
+    // Corpo (retângulo arredondado - torso)
+    ctx.fillStyle = '#3a5abf';
+    ctx.beginPath();
+    ctx.roundRect(-9, -4, 18, 16, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#1a3a8f';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Braços (2 círculos nas laterais)
+    ctx.fillStyle = '#5a7adf';
+    // Braço esquerdo
+    ctx.beginPath();
+    ctx.arc(-11, 2 + balanco, 4, 0, Math.PI * 2);
+    ctx.fill();
+    // Braço direito
+    ctx.beginPath();
+    ctx.arc(11, 2 - balanco, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pernas
+    ctx.fillStyle = '#2a3a6f';
+    ctx.fillRect(-7, 12, 5, 5 + balanco);
+    ctx.fillRect(2, 12, 5, 5 - balanco);
+
+    // Cabeça
+    ctx.fillStyle = '#e8b48a'; // tom de pele
+    ctx.beginPath();
+    ctx.arc(0, -8, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#a07a5a';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Cabelo
+    ctx.fillStyle = '#3a2818';
+    ctx.beginPath();
+    ctx.arc(0, -10, 8, Math.PI, 0);
+    ctx.fill();
+
+    // Olhos (virados pra direção)
+    const eyeOffX = Math.cos(direcao) * 2;
+    const eyeOffY = Math.sin(direcao) * 1;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(-3 + eyeOffX, -8 + eyeOffY, 1.5, 0, Math.PI*2);
+    ctx.arc(3 + eyeOffX, -8 + eyeOffY, 1.5, 0, Math.PI*2);
+    ctx.fill();
+
+    // Arma se tiver
+    if (inventario.includes('arma')) {
+        ctx.save();
+        ctx.rotate(direcao);
+        ctx.fillStyle = '#222';
+        ctx.fillRect(8, -3, 14, 5);
+        ctx.fillStyle = '#444';
+        ctx.fillRect(8, -3, 8, 5);
+        ctx.restore();
+    }
+
+    // Móvel carregado na cabeça
+    if (movelCarregado) {
+        const info = TIPOS_ITEM[movelCarregado];
+        ctx.fillStyle = info.cor;
+        ctx.beginPath();
+        ctx.roundRect(-12, -30, 24, 16, 4);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Cor secundária (detalhe)
+        ctx.fillStyle = info.cor2;
+        ctx.fillRect(-10, -26, 20, 4);
+    }
+
+    ctx.restore();
+}
+
+// =============== SPRITE DO ZUMBI ===============
+function desenharZumbi(z) {
+    const { x, y, raio, tipo, cor, corBorda } = z;
+    const balanco = Math.sin(z.passo) * 2;
+
+    // Sombra
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + raio * 0.9, raio * 1.1, raio * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Aura de alerta (se viu o jogador)
+    if (z.ultimoVisto && z.tempoPerdido < 0.5) {
+        ctx.strokeStyle = 'rgba(255,50,50,0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, raio + 8 + Math.sin(tempo*10) * 3, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    ctx.save();
+    ctx.translate(x, y);
+
+    const escala = tipo === 'rapido' ? 0.75 : 1.2;
+
+    // Corpo (torso curvado, meio zumbi)
+    ctx.fillStyle = corBorda;
+    ctx.beginPath();
+    ctx.roundRect(-9 * escala, -2 * escala, 18 * escala, 14 * escala, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Rasgos na roupa (detalhe)
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(-5 * escala, 2 * escala, 3 * escala, 4 * escala);
+    ctx.fillRect(3 * escala, 5 * escala, 3 * escala, 3 * escala);
+
+    // Braços esticados pra frente (clássico zumbi)
+    ctx.fillStyle = cor;
+    // Braço esquerdo
+    ctx.beginPath();
+    ctx.ellipse(-11 * escala, -1 * escala + balanco, 4 * escala, 6 * escala, -0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = corBorda;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Braço direito
+    ctx.beginPath();
+    ctx.ellipse(11 * escala, -1 * escala - balanco, 4 * escala, 6 * escala, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Pernas
+    ctx.fillStyle = corBorda;
+    ctx.fillRect(-6 * escala, 10 * escala, 4 * escala, 6 * escala);
+    ctx.fillRect(2 * escala, 10 * escala, 4 * escala, 6 * escala);
+
+    // Cabeça
+    ctx.fillStyle = cor;
+    ctx.beginPath();
+    ctx.arc(0, -9 * escala, 8 * escala, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = corBorda;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Ferida na cabeça
+    ctx.fillStyle = 'rgba(120,0,0,0.6)';
+    ctx.beginPath();
+    ctx.arc(3 * escala, -10 * escala, 2.5 * escala, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Olhos vermelhos brilhantes
+    ctx.fillStyle = '#f00';
+    ctx.shadowColor = '#f00';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(-3 * escala, -9 * escala, 1.8 * escala, 0, Math.PI * 2);
+    ctx.arc(3 * escala, -9 * escala, 1.8 * escala, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Boca
+    ctx.strokeStyle = '#400';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(0, -5 * escala, 3 * escala, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+
+    ctx.restore();
+
+    // Barra de vida se estiver ferido
+    if (z.vida < (tipo === 'rapido' ? 20 : 70)) {
+        const maxVida = tipo === 'rapido' ? 20 : 70;
+        const pct = z.vida / maxVida;
+        const w = raio * 2;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x - raio - 1, y - raio - 14, w + 2, 5);
+        ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
+        ctx.fillRect(x - raio, y - raio - 13, w * pct, 3);
+    }
+}
+
+// =============== SPRITE DO ITEM ===============
+function desenharItem(it) {
+    const info = TIPOS_ITEM[it.tipo];
+    const bob = Math.sin(it.bob) * 3;
+
+    // Sombra
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(it.x, it.y + 12, 14, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glow sutil
+    const grad = ctx.createRadialGradient(it.x, it.y, 0, it.x, it.y, 25);
+    grad.addColorStop(0, info.cor + '80');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(it.x, it.y, 25, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Corpo
+    ctx.fillStyle = info.cor;
+    ctx.beginPath();
+    ctx.roundRect(it.x - 14, it.y - 14 + bob, 28, 28, 6);
+    ctx.fill();
+    ctx.strokeStyle = info.cor2;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Detalhe interno
+    ctx.fillStyle = info.cor2;
+    ctx.fillRect(it.x - 10, it.y - 6 + bob, 20, 3);
+
+    // Emoji
+    ctx.font = '20px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(info.emoji, it.x, it.y + 1 + bob);
+}
+
+// =============== SPRITE DA BARRICADA ===============
+function desenharBarricada(b) {
+    const info = TIPOS_ITEM[b.tipo];
+
+    // Sombra
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath();
+    ctx.ellipse(b.x, b.y + b.raio * 0.7, b.raio * 1.2, b.raio * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Corpo
+    ctx.fillStyle = info.cor;
+    ctx.beginPath();
+    ctx.roundRect(b.x - b.raio, b.y - b.raio, b.raio * 2, b.raio * 2, 8);
+    ctx.fill();
+    ctx.strokeStyle = info.cor2;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Detalhes (tipo uma "tábua" no meio)
+    ctx.fillStyle = info.cor2;
+    ctx.fillRect(b.x - b.raio, b.y - 3, b.raio * 2, 6);
+
+    // Emoji
+    ctx.font = `${b.raio + 4}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(info.emoji, b.x, b.y);
+
+    // Barra de vida
+    const pct = b.vida / b.vidaMax;
+    const barW = b.raio * 2;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(b.x - b.raio - 2, b.y - b.raio - 16, barW + 4, 8);
+    ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
+    ctx.fillRect(b.x - b.raio, b.y - b.raio - 14, barW * pct, 4);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(b.x - b.raio, b.y - b.raio - 14, barW, 4);
+}
+
+// =============== RENDER PRINCIPAL ===============
 function render() {
-    ctx.fillStyle = '#1a1a1a';
+    // Fundo escuro (fora do mundo)
+    ctx.fillStyle = '#0a0a0c';
     ctx.fillRect(0, 0, LARGURA, ALTURA);
 
     const targetX = Math.max(0, Math.min(LARGURA_MUNDO - LARGURA, jogador.x - LARGURA/2));
@@ -891,6 +1383,7 @@ function render() {
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
 
+    // Mapa
     const x0 = Math.max(0, Math.floor(camera.x / TAMANHO_TILE) - 1);
     const y0 = Math.max(0, Math.floor(camera.y / TAMANHO_TILE) - 1);
     const x1 = Math.min(MAPA_LARGURA, Math.ceil((camera.x + LARGURA) / TAMANHO_TILE) + 1);
@@ -898,120 +1391,31 @@ function render() {
 
     for (let y = y0; y < y1; y++) {
         for (let x = x0; x < x1; x++) {
-            const px = x * TAMANHO_TILE;
-            const py = y * TAMANHO_TILE;
-            if (MAPA[y][x] === 1) {
-                ctx.fillStyle = '#4a3a2a';
-                ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-                ctx.strokeStyle = '#2a1a0a';
-                ctx.strokeRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-            } else {
-                ctx.fillStyle = y < 21 ? '#3a2f25' : '#2a2a2a';
-                ctx.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-                ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-                ctx.strokeRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
-            }
+            desenharTile(x * TAMANHO_TILE, y * TAMANHO_TILE, MAPA[y][x]);
         }
     }
 
+    // Sangue no chão
     for (const s of manchasSangue) {
         ctx.fillStyle = s.cor;
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.raio, 0, Math.PI * 2);
+        ctx.ellipse(s.x, s.y, s.raio, s.raio * s.escalaY, s.rot, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    for (const it of itens) {
-        const info = TIPOS_ITEM[it.tipo];
-        ctx.fillStyle = info.cor;
-        ctx.beginPath();
-        ctx.arc(it.x, it.y, it.raio + 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.fillStyle = '#fff';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(info.emoji, it.x, it.y + 1);
-    }
+    // Itens
+    for (const it of itens) desenharItem(it);
 
-    for (const b of barricadas) {
-        const info = TIPOS_ITEM[b.tipo];
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
-        ctx.beginPath();
-        ctx.ellipse(b.x, b.y + b.raio*0.7, b.raio*1.1, b.raio*0.4, 0, 0, Math.PI*2);
-        ctx.fill();
+    // Barricadas
+    for (const b of barricadas) desenharBarricada(b);
 
-        ctx.fillStyle = info.cor;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.raio, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 3;
-        ctx.stroke();
+    // Zumbis
+    for (const z of zumbis) desenharZumbi(z);
 
-        ctx.fillStyle = '#fff';
-        ctx.font = `${b.raio + 6}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(info.emoji, b.x, b.y);
+    // Jogador
+    desenharJogador();
 
-        const pct = b.vida / b.vidaMax;
-        const barW = b.raio * 2;
-        ctx.fillStyle = '#000';
-        ctx.fillRect(b.x - b.raio - 1, b.y - b.raio - 13, barW + 2, 6);
-        ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
-        ctx.fillRect(b.x - b.raio, b.y - b.raio - 12, barW * pct, 4);
-    }
-
-    for (const z of zumbis) {
-        ctx.fillStyle = z.cor;
-        ctx.beginPath();
-        ctx.arc(z.x, z.y, z.raio, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = z.corBorda;
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        ctx.fillStyle = '#f00';
-        const olhoOff = z.raio * 0.35;
-        ctx.beginPath();
-        ctx.arc(z.x - olhoOff, z.y - z.raio*0.2, z.raio*0.15, 0, Math.PI*2);
-        ctx.arc(z.x + olhoOff, z.y - z.raio*0.2, z.raio*0.15, 0, Math.PI*2);
-        ctx.fill();
-    }
-
-    ctx.fillStyle = '#3a7adf';
-    ctx.beginPath();
-    ctx.arc(jogador.x, jogador.y, jogador.raio, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#1a3a8f';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    const mundoMouseX = mouse.x + camera.x;
-    const mundoMouseY = mouse.y + camera.y;
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(jogador.x, jogador.y);
-    ctx.lineTo(mundoMouseX, mundoMouseY);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.strokeStyle = 'rgba(255,80,80,0.9)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(mundoMouseX, mundoMouseY, 8, 0, Math.PI * 2);
-    ctx.moveTo(mundoMouseX - 12, mundoMouseY);
-    ctx.lineTo(mundoMouseX + 12, mundoMouseY);
-    ctx.moveTo(mundoMouseX, mundoMouseY - 12);
-    ctx.lineTo(mundoMouseX, mundoMouseY + 12);
-    ctx.stroke();
-
+    // Partículas
     for (const p of particulas) {
         if (p.tipo === 'tiro') {
             ctx.strokeStyle = `rgba(255, 230, 100, ${p.vida * 12})`;
@@ -1020,6 +1424,11 @@ function render() {
             ctx.moveTo(p.x1, p.y1);
             ctx.lineTo(p.x2, p.y2);
             ctx.stroke();
+            // Muzzle flash
+            ctx.fillStyle = `rgba(255, 240, 150, ${p.vida * 10})`;
+            ctx.beginPath();
+            ctx.arc(p.x1, p.y1, 15, 0, Math.PI * 2);
+            ctx.fill();
         } else if (p.tipo === 'sangue') {
             ctx.fillStyle = `rgba(200, 30, 30, ${p.vida * 1.5})`;
             ctx.beginPath();
@@ -1028,10 +1437,9 @@ function render() {
         }
     }
 
+    // Preview da barricada
     if (movelCarregado) {
         const info = TIPOS_ITEM[movelCarregado];
-        ctx.globalAlpha = 0.85;
-
         const pvx = jogador.x + Math.cos(jogador.direcao) * (jogador.raio + info.tamanho + 4);
         const pvy = jogador.y + Math.sin(jogador.direcao) * (jogador.raio + info.tamanho + 4);
         const podeColocar = !colide(pvx, pvy, info.tamanho) &&
@@ -1044,30 +1452,71 @@ function render() {
         ctx.arc(pvx, pvy, info.tamanho, 0, Math.PI*2);
         ctx.stroke();
         ctx.setLineDash([]);
-
-        ctx.fillStyle = info.cor;
-        ctx.beginPath();
-        ctx.arc(jogador.x, jogador.y - 28, 14, 0, Math.PI*2);
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#fff';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(info.emoji, jogador.x, jogador.y - 28);
     }
 
     ctx.restore();
 
+    // Cursor personalizado
+    const mundoMouseX = mouse.x + camera.x;
+    const mundoMouseY = mouse.y + camera.y;
+
+    ctx.strokeStyle = 'rgba(255,80,80,0.9)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 10, 0, Math.PI * 2);
+    ctx.moveTo(mouse.x - 16, mouse.y);
+    ctx.lineTo(mouse.x - 6, mouse.y);
+    ctx.moveTo(mouse.x + 6, mouse.y);
+    ctx.lineTo(mouse.x + 16, mouse.y);
+    ctx.moveTo(mouse.x, mouse.y - 16);
+    ctx.lineTo(mouse.x, mouse.y - 6);
+    ctx.moveTo(mouse.x, mouse.y + 6);
+    ctx.lineTo(mouse.x, mouse.y + 16);
+    ctx.stroke();
+
+    // Linha de mira
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(jogador.x, jogador.y);
+    ctx.lineTo(mundoMouseX, mundoMouseY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // ============ VINHETA (efeito de escurecimento nas bordas) ============
+    const vinheta = ctx.createRadialGradient(LARGURA/2, ALTURA/2, ALTURA * 0.4, LARGURA/2, ALTURA/2, ALTURA * 0.8);
+    vinheta.addColorStop(0, 'rgba(0,0,0,0)');
+    vinheta.addColorStop(1, 'rgba(0,0,0,0.6)');
+    ctx.fillStyle = vinheta;
+    ctx.fillRect(0, 0, LARGURA, ALTURA);
+
+    // Aviso de vida baixa (borda vermelha)
+    if (jogador.vida < 30 && rodando) {
+        const intensidade = (30 - jogador.vida) / 30;
+        const gradVermelho = ctx.createRadialGradient(LARGURA/2, ALTURA/2, ALTURA * 0.3, LARGURA/2, ALTURA/2, ALTURA * 0.9);
+        gradVermelho.addColorStop(0, 'rgba(0,0,0,0)');
+        gradVermelho.addColorStop(1, `rgba(200,0,0,${intensidade * 0.6})`);
+        ctx.fillStyle = gradVermelho;
+        ctx.fillRect(0, 0, LARGURA, ALTURA);
+    }
+
+    // Avisos inferiores
     if (movelCarregado) {
         ctx.fillStyle = 'rgba(255, 200, 0, 0.9)';
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('🚧 Aperte E para colocar a barricada | Q para devolver', LARGURA/2, ALTURA - 15);
     }
+
+    // Indicador "empurrar com direito"
+    ctx.fillStyle = 'rgba(200,200,200,0.5)';
+    ctx.font = '11px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('🖱️ Botão DIREITO = empurrar item', 10, ALTURA - 10);
 }
 
 // =============== GAME OVER ===============
@@ -1085,6 +1534,22 @@ function loop(timestamp) {
     if (rodando) atualizar(dt);
     render();
     requestAnimationFrame(loop);
+}
+
+// Polyfill para roundRect
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        return this;
+    };
 }
 
 iniciar();
