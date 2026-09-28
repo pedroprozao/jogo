@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>🧟 Zumbi House V6.2</title>
+<title>🧟 Zumbi House V6.3 — Física Real</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -75,8 +75,8 @@ canvas {
 </div>
 
 <div id="aviso">
-    <b>PEGAR MÓVEL:</b> Segure o <b>BOTÃO DIREITO</b> em cima de um item grande → ele gruda na sua mão → ande até a porta → solte → barricada!<br>
-    WASD = andar | Shift = correr | Botão esq = atirar | Q = devolver | E = soltar na mira
+    <b>PEGAR MÓVEL:</b> Segure <b>BOTÃO DIREITO</b> em cima de um item → ele gruda na mão → ande → solte → barricada com PESO real!<br>
+    WASD = andar | Shift = correr | Botão esq = atirar | Q = devolver | E = soltar
 </div>
 
 <div id="gameOver" class="escondido">
@@ -91,7 +91,7 @@ canvas {
 
 try {
 
-// Polyfill roundRect
+// ===== POLYFILL =====
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
         if (typeof r === 'number') r = [r, r, r, r];
@@ -145,6 +145,7 @@ const sQuebra = () => toca(60, 30, 0.7, 'square', 0.28);
 const sBate = () => toca(90 + Math.random()*40, 50, 0.1, 'square', 0.2);
 const sPegar = () => toca(500, 700, 0.15, 'sine', 0.18);
 const sSoltar = () => toca(300, 150, 0.2, 'triangle', 0.2);
+const sRaspar = () => toca(150 + Math.random()*50, 80, 0.08, 'triangle', 0.1);
 function sGemido() {
     if (!audioCtx) return;
     try {
@@ -216,17 +217,19 @@ let botaoDireitoPressionado = false;
 let camera = { x: 0, y: 0 };
 let zumbisMortosContador = 0;
 
+// ===== TIPOS DE ITEM (com PESO) =====
+// peso: 0 = leve (zumbi empurra fácil), 1 = médio, 2 = pesado (difícil de empurrar)
 const TIPOS_ITEM = {
     'arma':       { nome: 'Pistola',   tipo: 'arma' },
     'municao':    { nome: 'Munição',   tipo: 'municao' },
     'medkit':     { nome: 'Medkit',    tipo: 'medkit' },
-    'caixa':      { nome: 'Caixa',     tipo: 'movel', largura: 40, altura: 40, vida: 100 },
-    'caixagrande':{ nome: 'Caixa G.',  tipo: 'movel', largura: 56, altura: 50, vida: 180 },
-    'geladeira':  { nome: 'Geladeira', tipo: 'movel', largura: 44, altura: 60, vida: 240 },
-    'sofa':       { nome: 'Sofá',      tipo: 'movel', largura: 64, altura: 36, vida: 150 },
-    'estante':    { nome: 'Estante',   tipo: 'movel', largura: 48, altura: 44, vida: 130 },
-    'barril':     { nome: 'Barril',    tipo: 'movel', largura: 40, altura: 48, vida: 160 },
-    'mesa':       { nome: 'Mesa',      tipo: 'movel', largura: 56, altura: 40, vida: 120 },
+    'caixa':      { nome: 'Caixa',     tipo: 'movel', largura: 44, altura: 44, vida: 120, peso: 1.0 },
+    'caixagrande':{ nome: 'Caixa G.',  tipo: 'movel', largura: 60, altura: 54, vida: 220, peso: 1.6 },
+    'geladeira':  { nome: 'Geladeira', tipo: 'movel', largura: 48, altura: 64, vida: 300, peso: 2.5 },
+    'sofa':       { nome: 'Sofá',      tipo: 'movel', largura: 68, altura: 40, vida: 180, peso: 1.8 },
+    'estante':    { nome: 'Estante',   tipo: 'movel', largura: 52, altura: 48, vida: 160, peso: 1.5 },
+    'barril':     { nome: 'Barril',    tipo: 'movel', largura: 44, altura: 52, vida: 200, peso: 2.0 },
+    'mesa':       { nome: 'Mesa',      tipo: 'movel', largura: 60, altura: 44, vida: 140, peso: 1.3 },
 };
 
 function criarJogador() {
@@ -236,13 +239,13 @@ function criarZumbiRapido(x, y) {
     return { x, y, raio: 10, vel: 130 + Math.random()*30, vida: 20, dano: 6, ultimoDano: 0,
              tipo: 'rapido', cor: '#7cff5a', corBorda: '#3a8a1a', passo: 0,
              ultimoVisto: null, tempoPerdido: 0, memoria: 3, vagarPonto: null,
-             empurrando: null, travado: 0 };
+             empurrando: null, forca: 0.7, encostandoBar: 0 };
 }
 function criarZumbiForte(x, y) {
     return { x, y, raio: 18, vel: 50 + Math.random()*15, vida: 70, dano: 15, ultimoDano: 0,
              tipo: 'forte', cor: '#3a8a3a', corBorda: '#1a4a1a', passo: 0,
              ultimoVisto: null, tempoPerdido: 0, memoria: 5, vagarPonto: null,
-             empurrando: null, travado: 0 };
+             empurrando: null, forca: 1.8, encostandoBar: 0 };
 }
 function criarItem(x, y, tipo) {
     const info = TIPOS_ITEM[tipo];
@@ -254,29 +257,80 @@ function criarItem(x, y, tipo) {
 }
 
 // ===================================================================
-//  SISTEMA DE COLISÃO — CÍRCULO x RETÂNGULO (sólido, sem atravessar)
+//  FÍSICA DE COLISÃO — CÍRCULO x RETÂNGULO PESADO
 // ===================================================================
 
-// Retorna true se o círculo (cx,cy,cr) sobrepõe o retângulo centrado em (rx,ry) com (rw,rh).
-// Adiciona uma margem pra evitar que o zumbi "raspe" e passe.
-const MARGEM_COLISAO = 4; // 4px de margem extra em volta do retângulo
-
-function circuloSobrepoeRet(cx, cy, cr, rx, ry, rw, rh) {
-    const halfW = rw / 2 + MARGEM_COLISAO;
-    const halfH = rh / 2 + MARGEM_COLISAO;
+// Calcula o ponto mais próximo do círculo dentro do retângulo.
+function pontoMaisProximoRet(cx, cy, rx, ry, rw, rh) {
+    const halfW = rw / 2, halfH = rh / 2;
     const closestX = Math.max(rx - halfW, Math.min(cx, rx + halfW));
     const closestY = Math.max(ry - halfH, Math.min(cy, ry + halfH));
-    const dx = cx - closestX;
-    const dy = cy - closestY;
-    return dx*dx + dy*dy < cr*cr;
+    return { x: closestX, y: closestY };
 }
 
-// Colisão só com barricadas (usada por zumbis)
-function colideBarricadas(x, y, raio, ignorar) {
+// Testa se um círculo toca um retângulo com margem
+function circuloRetToca(cx, cy, cr, rx, ry, rw, rh, margem) {
+    margem = margem || 0;
+    const p = pontoMaisProximoRet(cx, cy, rx, ry, rw, rh);
+    const dx = cx - p.x, dy = cy - p.y;
+    return dx*dx + dy*dy < (cr + margem)*(cr + margem);
+}
+
+// SEPARAÇÃO REAL — se o círculo está sobrepondo, empurra ele pra fora pelo vetor mais curto
+function separarCirculoDoRet(ent, raio, rx, ry, rw, rh) {
+    const p = pontoMaisProximoRet(ent.x, ent.y, rx, ry, rw, rh);
+    let dx = ent.x - p.x, dy = ent.y - p.y;
+    let dist = Math.sqrt(dx*dx + dy*dy);
+
+    // Caso especial: círculo está DENTRO do retângulo (não só tocando)
+    const halfW = rw / 2, halfH = rh / 2;
+    const dentroX = Math.abs(ent.x - rx) < halfW;
+    const dentroY = Math.abs(ent.y - ry) < halfH;
+
+    if (dentroX && dentroY) {
+        // Empurra para fora pelo lado mais próximo
+        const distEsq = ent.x - (rx - halfW);
+        const distDir = (rx + halfW) - ent.x;
+        const distTop = ent.y - (ry - halfH);
+        const distBaix = (ry + halfH) - ent.y;
+        const menor = Math.min(distEsq, distDir, distTop, distBaix);
+
+        if (menor === distEsq) ent.x = rx - halfW - raio - 0.5;
+        else if (menor === distDir) ent.x = rx + halfW + raio + 0.5;
+        else if (menor === distTop) ent.y = ry - halfH - raio - 0.5;
+        else ent.y = ry + halfH + raio + 0.5;
+        return true;
+    }
+
+    if (dist < raio && dist > 0.001) {
+        // Empurra pra fora do retângulo
+        const overlap = raio - dist;
+        ent.x += (dx / dist) * overlap;
+        ent.y += (dy / dist) * overlap;
+        return true;
+    }
+    return false;
+}
+
+// COLISÃO DO ZUMBI COM TUDO — retorna a barricada tocada (ou null)
+function zumbiColideTudo(z) {
+    // Parede primeiro
+    const x1 = Math.floor((z.x - z.raio) / TAMANHO_TILE);
+    const y1 = Math.floor((z.y - z.raio) / TAMANHO_TILE);
+    const x2 = Math.floor((z.x + z.raio) / TAMANHO_TILE);
+    const y2 = Math.floor((z.y + z.raio) / TAMANHO_TILE);
+    for (let ty = y1; ty <= y2; ty++)
+        for (let tx = x1; tx <= x2; tx++) {
+            if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) return 'parede';
+            if (MAPA[ty][tx] === 1) return 'parede';
+        }
+
+    // Barricada
     for (let i = 0; i < barricadas.length; i++) {
         const b = barricadas[i];
-        if (b === ignorar) continue;
-        if (circuloSobrepoeRet(x, y, raio, b.x, b.y, b.largura, b.altura)) return b;
+        if (circuloRetToca(z.x, z.y, z.raio, b.x, b.y, b.largura, b.altura, 0)) {
+            return b;
+        }
     }
     return null;
 }
@@ -294,72 +348,83 @@ function colideParedes(x, y, raio) {
     return false;
 }
 
-// Movimento com DESLIZE — se não pode ir em X,Y, tenta só em X ou só em Y.
-// Retorna a nova posição.
-function moverComColisao(ent, dx, dy, raio, ignorarBar) {
-    let nx = ent.x + dx;
-    let ny = ent.y + dy;
+// MOVE O ZUMBI COM FÍSICA COMPLETA:
+// 1. Tenta mover na direção desejada
+// 2. Se bateu em barricada, EMPURRA a barricada um pouquinho (peso entra aqui)
+// 3. Separa o zumbi de qualquer barricada que ele esteja tocando
+function moverZumbiComFisica(z, dirX, dirY, dt) {
+    const passo = z.vel * dt;
+    const tentativaX = z.x + dirX * passo;
+    const tentativaY = z.y + dirY * passo;
 
-    // Bloqueio por parede
-    const bloqueiaParede = (x, y) => colideParedes(x, y, raio);
+    // Movimento eixo por eixo (deslize ao longo de paredes)
+    if (!colideParedes(tentativaX, z.y, z.raio)) z.x = tentativaX;
+    if (!colideParedes(z.x, tentativaY, z.raio)) z.y = tentativaY;
 
-    // Testa posição final primeiro
-    const podeX = !bloqueiaParede(nx, ent.y) && !colideBarricadas(nx, ent.y, raio, ignorarBar);
-    const podeY = !bloqueiaParede(ent.x, ny) && !colideBarricadas(ent.x, ny, raio, ignorarBar);
+    // Agora, para cada barricada que o zumbi está tocando,
+    // (a) separa ele da barricada
+    // (b) empurra a barricada um pouquinho (efeito de peso)
+    let barricadaTocada = null;
+    for (let i = 0; i < barricadas.length; i++) {
+        const b = barricadas[i];
+        const tocando = circuloRetToca(z.x, z.y, z.raio, b.x, b.y, b.largura, b.altura, 2);
+        if (tocando) {
+            barricadaTocada = b;
 
-    // Se X e Y juntos passam, ótimo
-    if (!bloqueiaParede(nx, ny) && !colideBarricadas(nx, ny, raio, ignorarBar)) {
-        ent.x = nx;
-        ent.y = ny;
-        return true;
-    }
+            // (a) separa o zumbi
+            separarCirculoDoRet(z, z.raio, b.x, b.y, b.largura, b.altura);
 
-    // Senão, tenta deslizar
-    let moveu = false;
-    if (podeX) { ent.x = nx; moveu = true; }
-    if (podeY) { ent.y = ny; moveu = true; }
+            // (b) empurra a barricada na direção do movimento
+            // Peso: barricada mais pesada = menos empurra
+            const empurrao = (z.forca * 8 * dt) / (b.peso || 1);
+            // Empurra apenas se a direção do movimento aponta pra barricada
+            const bDx = dirX, bDy = dirY;
 
-    // Se ainda travado, tenta empurrar pra fora de uma barricada (última chance)
-    if (!moveu) {
-        const b = colideBarricadas(ent.x, ent.y, raio, ignorarBar);
-        if (b) {
-            // Vetor saindo do centro da barricada
-            let vx = ent.x - b.x;
-            let vy = ent.y - b.y;
-            const len = Math.sqrt(vx*vx + vy*vy) || 1;
-            vx /= len; vy /= len;
-            // Empurra pra fora
-            const empurrao = 2;
-            const ex = ent.x + vx * empurrao;
-            const ey = ent.y + vy * empurrao;
-            if (!colideBarricadas(ex, ey, raio, ignorarBar)) {
-                ent.x = ex;
-                ent.y = ey;
+            // Testa se a barricada pode se mover sem bater em parede
+            const novoBX = b.x + bDx * empurrao;
+            const novoBY = b.y + bDy * empurrao;
+
+            // Verifica se a barricada cabe na nova posição
+            let cabe = true;
+            const bx1 = Math.floor((novoBX - b.largura/2) / TAMANHO_TILE);
+            const by1 = Math.floor((novoBY - b.altura/2) / TAMANHO_TILE);
+            const bx2 = Math.floor((novoBX + b.largura/2) / TAMANHO_TILE);
+            const by2 = Math.floor((novoBY + b.altura/2) / TAMANHO_TILE);
+            for (let ty = by1; ty <= by2; ty++) {
+                for (let tx = bx1; tx <= bx2; tx++) {
+                    if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) { cabe = false; break; }
+                    if (MAPA[ty][tx] === 1) { cabe = false; break; }
+                }
+                if (!cabe) break;
+            }
+
+            // Não deixa empurrar contra outras barricadas
+            if (cabe) {
+                for (let j = 0; j < barricadas.length; j++) {
+                    if (j === i) continue;
+                    const outra = barricadas[j];
+                    if (circuloRetToca(outra.x, outra.y, 0, novoBX, novoBY, b.largura, b.altura, 0) ||
+                        (Math.abs(outra.x - novoBX) < (outra.largura + b.largura)/2 &&
+                         Math.abs(outra.y - novoBY) < (outra.altura + b.altura)/2)) {
+                        cabe = false;
+                        break;
+                    }
+                }
+            }
+
+            if (cabe && empurrao > 0.01) {
+                b.x = novoBX;
+                b.y = novoBY;
+                if (Math.random() < 0.02) sRaspar();
             }
         }
     }
-    return moveu;
+    return barricadaTocada;
 }
 
-// Raycast: retorna a barricada mais próxima entre (x1,y1) e (x2,y2), se houver.
-function barricadaNoCaminho(x1, y1, x2, y2) {
-    const passos = 20;
-    let primeiraEncontrada = null;
-    let distPrimeira = Infinity;
-
-    for (let i = 1; i <= passos; i++) {
-        const t = i / passos;
-        const px = x1 + (x2 - x1) * t;
-        const py = y1 + (y2 - y1) * t;
-        const b = colideBarricadas(px, py, 2, null);
-        if (b) {
-            const d = Math.sqrt((px - x1)**2 + (py - y1)**2);
-            if (d < distPrimeira) { distPrimeira = d; primeiraEncontrada = b; }
-        }
-    }
-    return primeiraEncontrada;
-}
-
+// ===================================================================
+//  VISÃO
+// ===================================================================
 function temVisao(x1, y1, x2, y2) {
     const dx = x2 - x1, dy = y2 - y1;
     const dist = Math.sqrt(dx*dx + dy*dy);
@@ -374,9 +439,25 @@ function temVisao(x1, y1, x2, y2) {
     return true;
 }
 
+// Retorna a barricada mais próxima entre dois pontos (raycast)
+function barricadaNoCaminho(x1, y1, x2, y2) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const passos = Math.ceil(dist / 8);
+    for (let i = 1; i <= passos; i++) {
+        const t = i / passos;
+        const px = x1 + dx * t;
+        const py = y1 + dy * t;
+        for (let bi = 0; bi < barricadas.length; bi++) {
+            const b = barricadas[bi];
+            if (circuloRetToca(px, py, 2, b.x, b.y, b.largura, b.altura, 0)) return b;
+        }
+    }
+    return null;
+}
+
 // ===== INPUT =====
 const teclas = {};
-
 function onKeyDown(e) {
     initAudio();
     const k = e.key.toLowerCase();
@@ -404,7 +485,6 @@ canvas.addEventListener('mousemove', function(e) {
     mouse.y = (e.clientY - r.top) * (ALTURA / r.height);
 });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
-
 canvas.addEventListener('mousedown', function(e) {
     initAudio();
     if (e.button === 0) atirar();
@@ -413,7 +493,6 @@ canvas.addEventListener('mousedown', function(e) {
         tentarPegarItemSobMouse();
     }
 });
-
 window.addEventListener('mouseup', function(e) {
     if (e.button === 2) {
         botaoDireitoPressionado = false;
@@ -425,7 +504,6 @@ function tentarPegarItemSobMouse() {
     if (itemNaMao) return;
     const mmX = mouse.x + camera.x;
     const mmY = mouse.y + camera.y;
-
     for (let i = itens.length - 1; i >= 0; i--) {
         const it = itens[i];
         const info = TIPOS_ITEM[it.tipo];
@@ -461,13 +539,15 @@ function soltarItemNaMao() {
     } else { px = mmX; py = mmY; }
 
     const info = TIPOS_ITEM[itemNaMao.tipo];
-    // Verifica se cabe (não sobrepõe parede nem outra barricada)
-    const bloqueiaParede = colideParedes(px, py, Math.max(info.largura, info.altura) / 2 - 2);
+    const meiaL = Math.max(info.largura, info.altura) / 2 - 2;
+    const bloqueiaParede = colideParedes(px, py, meiaL);
+
     let sobrepoe = false;
     for (let i = 0; i < barricadas.length; i++) {
         const b = barricadas[i];
-        const teste = circuloSobrepoeRet(px, py, Math.max(info.largura, info.altura)/2, b.x, b.y, b.largura, b.altura);
-        if (teste) { sobrepoe = true; break; }
+        const overlap = Math.abs(px - b.x) < (info.largura + b.largura)/2 - 2 &&
+                        Math.abs(py - b.y) < (info.altura + b.altura)/2 - 2;
+        if (overlap) { sobrepoe = true; break; }
     }
 
     if (!bloqueiaParede && !sobrepoe) {
@@ -493,7 +573,6 @@ function adicionarItem(tipo) {
     atualizarInventario();
     sColeta();
 }
-
 function usarItem(idx) {
     if (idx >= inventario.length) return;
     const tipo = inventario[idx];
@@ -501,7 +580,6 @@ function usarItem(idx) {
     const info = TIPOS_ITEM[tipo];
     if (!info) return;
     itemSelecionado = idx;
-
     if (tipo === 'medkit') {
         if (jogador.vida >= 100) return;
         jogador.vida = Math.min(100, jogador.vida + 40);
@@ -542,12 +620,10 @@ function atualizarInventario() {
         div.appendChild(s);
     }
 }
-
 function atualizarModo() {
     document.getElementById('modo').textContent = itemNaMao ? 'SEGURANDO' : 'LIVRE';
     document.getElementById('modo').style.color = itemNaMao ? '#ff0' : '#9f9';
 }
-
 function atualizarHUD() {
     if (!jogador) return;
     document.getElementById('vida').textContent = Math.max(0, Math.round(jogador.vida));
@@ -653,7 +729,7 @@ function atualizar(dt) {
     const mmY = mouse.y + camera.y;
     jogador.direcao = Math.atan2(mmY - jogador.y, mmX - jogador.x);
 
-    // Movimento do jogador
+    // MOVIMENTO DO JOGADOR (peso também afeta jogador!)
     let dx = 0, dy = 0;
     if (teclas['w'] || teclas['arrowup']) dy -= 1;
     if (teclas['s'] || teclas['arrowdown']) dy += 1;
@@ -664,12 +740,36 @@ function atualizar(dt) {
         dx /= len; dy /= len;
         const correr = teclas['shift'] ? 1.55 : 1;
         const fatorCarga = itemNaMao ? 0.7 : 1;
-        const vel = jogador.vel * correr * fatorCarga * dt;
-        moverComColisao(jogador, dx * vel, dy * vel, jogador.raio, null);
+        const passo = jogador.vel * correr * fatorCarga * dt;
+        const tentX = jogador.x + dx * passo;
+        const tentY = jogador.y + dy * passo;
+        if (!colideParedes(tentX, jogador.y, jogador.raio)) {
+            let bloqueado = false;
+            for (let i = 0; i < barricadas.length; i++) {
+                const b = barricadas[i];
+                if (circuloRetToca(tentX, jogador.y, jogador.raio, b.x, b.y, b.largura, b.altura, 2)) { bloqueado = true; break; }
+            }
+            if (!bloqueado) jogador.x = tentX;
+        }
+        if (!colideParedes(jogador.x, tentY, jogador.raio)) {
+            let bloqueado = false;
+            for (let i = 0; i < barricadas.length; i++) {
+                const b = barricadas[i];
+                if (circuloRetToca(jogador.x, tentY, jogador.raio, b.x, b.y, b.largura, b.altura, 2)) { bloqueado = true; break; }
+            }
+            if (!bloqueado) jogador.y = tentY;
+        }
         jogador.passo += dt * 10;
     }
 
-    // Item na mão segue o mouse
+    // Se tiver barricada tocando o jogador, separa ele (nunca entra na barricada)
+    for (let i = 0; i < barricadas.length; i++) {
+        const b = barricadas[i];
+        if (circuloRetToca(jogador.x, jogador.y, jogador.raio, b.x, b.y, b.largura, b.altura, 0)) {
+            separarCirculoDoRet(jogador, jogador.raio, b.x, b.y, b.largura, b.altura);
+        }
+    }
+
     if (itemNaMao) {
         const ddx = mmX - jogador.x, ddy = mmY - jogador.y;
         const d = Math.sqrt(ddx*ddx + ddy*ddy);
@@ -704,7 +804,7 @@ function atualizar(dt) {
             zumbis.push(Math.random() < 0.6 ? criarZumbiRapido(sx, sy) : criarZumbiForte(sx, sy));
     }
 
-    // ===== IA + EMPURRAR =====
+    // ===== IA + FÍSICA =====
     for (let zi = 0; zi < zumbis.length; zi++) {
         const z = zumbis[zi];
         const dxp = jogador.x - z.x, dyp = jogador.y - z.y;
@@ -726,9 +826,7 @@ function atualizar(dt) {
         if (veJogador || (z.ultimoVisto && z.tempoPerdido < z.memoria)) {
             alvoX = z.ultimoVisto ? z.ultimoVisto.x : jogador.x;
             alvoY = z.ultimoVisto ? z.ultimoVisto.y : jogador.y;
-
-            // Verifica se tem barricada no caminho até o alvo
-            // Se tiver, foca nela (não contorna)
+            // Se barricada no caminho, foca nela
             const bCaminho = barricadaNoCaminho(z.x, z.y, alvoX, alvoY);
             if (bCaminho) {
                 barricadaAlvo = bCaminho;
@@ -749,34 +847,26 @@ function atualizar(dt) {
         const aDx = alvoX - z.x, aDy = alvoY - z.y;
         const aDist = Math.sqrt(aDx*aDx + aDy*aDy);
         if (aDist > 2) {
-            // Se tem barricada alvo, não empurrar o zumbi pra "atravessar" — ele desliza
-            const passo = z.vel * dt;
             const dirX = aDx / aDist;
             const dirY = aDy / aDist;
-            const moveu = moverComColisao(z, dirX * passo, dirY * passo, z.raio, null);
-
-            // Conta travamento: se ficou travado por muito tempo perto de barricada, é porque está encostando nela
-            if (!moveu && barricadaAlvo) {
-                z.travado += dt;
-            } else {
-                z.travado = 0;
-            }
+            const barTocada = moverZumbiComFisica(z, dirX, dirY, dt);
+            if (barTocada) z.encostandoBar = barTocada;
+            else z.encostandoBar = 0;
             z.passo += dt * 8;
         }
 
-        // Ataca barricada
+        // Ataque na barricada
         if (barricadaAlvo) {
-            // Verifica se está encostando (com margem maior pra detectar)
-            const encostando = circuloSobrepoeRet(
-                z.x, z.y, z.raio + 6,
-                barricadaAlvo.x, barricadaAlvo.y,
-                barricadaAlvo.largura, barricadaAlvo.altura
-            );
-            if (encostando) {
+            const tocando = circuloRetToca(z.x, z.y, z.raio, barricadaAlvo.x, barricadaAlvo.y,
+                barricadaAlvo.largura, barricadaAlvo.altura, 4);
+            if (tocando) {
                 z.empurrando = barricadaAlvo;
-                if (tempo - (z.ultimoAtaqueBar || 0) > 0.6) {
+                if (tempo - (z.ultimoAtaqueBar || 0) > 0.55) {
                     z.ultimoAtaqueBar = tempo;
-                    barricadaAlvo.vida -= (z.tipo === 'forte' ? 10 : 4);
+                    // Dano baseado no peso do zumbi e da barricada
+                    const danoBase = z.tipo === 'forte' ? 12 : 5;
+                    // Barricada pesada resiste mais
+                    barricadaAlvo.vida -= danoBase / Math.sqrt(barricadaAlvo.peso || 1);
                     sBate();
                     if (barricadaAlvo.vida <= 0) {
                         sQuebra();
@@ -800,16 +890,98 @@ function atualizar(dt) {
         }
     }
 
-    // Empurrão em grupo
+    // ===== EMPURRÃO EM GRUPO — vários zumbis empurram juntos =====
+    // Conta quantos zumbis estão tocando cada barricada
     for (let bi = 0; bi < barricadas.length; bi++) {
         const b = barricadas[bi];
         let empurradores = 0;
-        for (let zi = 0; zi < zumbis.length; zi++)
-            if (zumbis[zi].empurrando === b) empurradores++;
-        if (empurradores > 2) b.vida -= (empurradores - 2) * dt * 12;
+        let forcaTotal = 0;
+        let somaDirX = 0, somaDirY = 0;
+
+        for (let zi = 0; zi < zumbis.length; zi++) {
+            const z = zumbis[zi];
+            const tocando = circuloRetToca(z.x, z.y, z.raio, b.x, b.y, b.largura, b.altura, 2);
+            if (tocando) {
+                empurradores++;
+                forcaTotal += z.forca;
+
+                // Direção que o zumbi está empurrando (em direção ao centro)
+                const dxz = b.x - z.x, dyz = b.y - z.y;
+                const len = Math.sqrt(dxz*dxz + dyz*dyz) || 1;
+                somaDirX += dxz / len;
+                somaDirY += dyz / len;
+            }
+        }
         b.empurrando = empurradores;
+
+        // Se 3+ zumbis empurram, a barricada desliza devagar
+        if (empurradores >= 3 && forcaTotal > 0) {
+            // Direção média
+            const len = Math.sqrt(somaDirX*somaDirX + somaDirY*somaDirY) || 1;
+            const dirX = somaDirX / len;
+            const dirY = somaDirY / len;
+
+            // Velocidade de deslize: proporcional à força / peso
+            const vel = (forcaTotal * 6 * dt) / (b.peso || 1);
+
+            const novoBX = b.x + dirX * vel;
+            const novoBY = b.y + dirY * vel;
+
+            // Só move se não bater em parede
+            let cabe = true;
+            const bx1 = Math.floor((novoBX - b.largura/2) / TAMANHO_TILE);
+            const by1 = Math.floor((novoBY - b.altura/2) / TAMANHO_TILE);
+            const bx2 = Math.floor((novoBX + b.largura/2) / TAMANHO_TILE);
+            const by2 = Math.floor((novoBY + b.altura/2) / TAMANHO_TILE);
+            for (let ty = by1; ty <= by2; ty++) {
+                for (let tx = bx1; tx <= bx2; tx++) {
+                    if (ty < 0 || tx < 0 || ty >= MAPA_ALTURA || tx >= MAPA_LARGURA) { cabe = false; break; }
+                    if (MAPA[ty][tx] === 1) { cabe = false; break; }
+                }
+                if (!cabe) break;
+            }
+
+            if (cabe) {
+                b.x = novoBX;
+                b.y = novoBY;
+
+                // Depois de mover a barricada, re-separa todos os zumbis que
+                // possam ter ficado dentro dela
+                for (let zi = 0; zi < zumbis.length; zi++) {
+                    const z = zumbis[zi];
+                    if (circuloRetToca(z.x, z.y, z.raio, b.x, b.y, b.largura, b.altura, 0)) {
+                        separarCirculoDoRet(z, z.raio, b.x, b.y, b.largura, b.altura);
+                    }
+                }
+            }
+        }
     }
 
+    // ===== SEPARAÇÃO DE ZUMBIS ENTRE SI =====
+    // Zumbis não podem ficar em cima um do outro — empurra um pro lado
+    for (let i = 0; i < zumbis.length; i++) {
+        for (let j = i + 1; j < zumbis.length; j++) {
+            const a = zumbis[i], b = zumbis[j];
+            const dx = b.x - a.x, dy = b.y - a.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const minDist = a.raio + b.raio;
+            if (dist < minDist && dist > 0.01) {
+                const overlap = (minDist - dist) / 2;
+                const nx = dx / dist, ny = dy / dist;
+                // Move ambos pra longe
+                if (!colideParedes(a.x - nx * overlap, a.y - ny * overlap, a.raio)) {
+                    a.x -= nx * overlap;
+                    a.y -= ny * overlap;
+                }
+                if (!colideParedes(b.x + nx * overlap, b.y + ny * overlap, b.raio)) {
+                    b.x += nx * overlap;
+                    b.y += ny * overlap;
+                }
+            }
+        }
+    }
+
+    // Limpezas
     for (let i = barricadas.length - 1; i >= 0; i--)
         if (barricadas[i].vida <= 0) barricadas.splice(i, 1);
     for (let i = zumbis.length - 1; i >= 0; i--)
@@ -861,14 +1033,14 @@ function desenharMovelTipo(tipo, cx, cy, largura, altura, opts) {
     const halfW = w/2, halfH = h/2;
 
     if (!preview) {
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
         ctx.beginPath();
-        ctx.ellipse(2, halfH + 4, halfW * 0.95, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse(3, halfH + 5, halfW * 0.95, 7, 0, 0, Math.PI * 2);
         ctx.fill();
     }
 
     if (preview) {
-        ctx.fillStyle = ghost ? 'rgba(255,0,0,0.25)' : 'rgba(0,255,0,0.25)';
+        ctx.fillStyle = ghost ? 'rgba(255,0,0,0.3)' : 'rgba(0,255,0,0.3)';
         ctx.fillRect(-halfW, -halfH, w, h);
         ctx.strokeStyle = ghost ? '#f00' : '#0f0';
         ctx.lineWidth = 3;
@@ -1005,7 +1177,7 @@ function desenharBarricada(b) {
     const pct = b.vida / b.vidaMax;
     const barW = b.largura;
     const barX = b.x - barW/2;
-    const barY = b.y - b.altura/2 - 12;
+    const barY = b.y - b.altura/2 - 14;
     ctx.fillStyle = '#000'; ctx.fillRect(barX - 2, barY - 2, barW + 4, 8);
     ctx.fillStyle = pct > 0.5 ? '#0f0' : pct > 0.25 ? '#ff0' : '#f00';
     ctx.fillRect(barX, barY, barW * pct, 4);
@@ -1141,9 +1313,8 @@ function render() {
         let sobrepoe = false;
         for (let i = 0; i < barricadas.length; i++) {
             const b = barricadas[i];
-            if (circuloSobrepoeRet(px, py, Math.max(info.largura, info.altura)/2, b.x, b.y, b.largura, b.altura)) {
-                sobrepoe = true; break;
-            }
+            if (Math.abs(px - b.x) < (info.largura + b.largura)/2 - 2 &&
+                Math.abs(py - b.y) < (info.altura + b.altura)/2 - 2) { sobrepoe = true; break; }
         }
         const cabe = !bloqueiaParede && !sobrepoe;
         desenharMovelTipo(itemNaMao.tipo, px, py, info.largura, info.altura, { preview: true, ghost: !cabe });
@@ -1164,7 +1335,6 @@ function render() {
 
     ctx.restore();
 
-    // Cursor
     ctx.strokeStyle = 'rgba(255,80,80,0.9)';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -1179,12 +1349,7 @@ function render() {
         ctx.fillStyle = 'rgba(255,200,0,0.95)';
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('SEGURANDO — solte o botão direito pra largar | Q pra devolver', LARGURA/2, ALTURA - 15);
-    } else {
-        ctx.fillStyle = 'rgba(180,180,180,0.6)';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Segure o BOTÃO DIREITO em cima de um móvel pra carregar', LARGURA/2, ALTURA - 15);
+        ctx.fillText('SEGURANDO — solte pra largar | Q devolver', LARGURA/2, ALTURA - 15);
     }
 }
 
